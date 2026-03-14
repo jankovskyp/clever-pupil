@@ -18,21 +18,20 @@ export async function addVocabularyWord(en: string, cz: string) {
     const tts = new MsEdgeTTS();
     await tts.setMetadata("en-US-AvaNeural", OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3);
     
-    // Create a buffer from the stream
+    // Create a buffer from the stream - cast to any to bypass TS error on Vercel
     const audioBuffer = await new Promise<Buffer>((resolve, reject) => {
       const chunks: Buffer[] = [];
+      const ttsEmitter = tts as any;
       
-      // We listen for data chunks and push them to our array
-      tts.on("data", (chunk: Buffer) => {
+      ttsEmitter.on("data", (chunk: Buffer) => {
         chunks.push(chunk);
       });
 
-      // When finished, we concatenate and resolve
-      tts.on("end", () => {
+      ttsEmitter.on("end", () => {
         resolve(Buffer.concat(chunks));
       });
 
-      tts.on("error", (err) => {
+      ttsEmitter.on("error", (err: any) => {
         reject(err);
       });
 
