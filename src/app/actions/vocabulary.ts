@@ -4,39 +4,29 @@ import { MsEdgeTTS, OUTPUT_FORMAT } from 'msedge-tts';
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || ''; // CRITICAL: Need Service Role Key for uploads
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
 export async function addVocabularyWord(en: string, cz: string) {
   if (!en || !cz) return { error: 'Missing words' };
-  if (!supabaseServiceKey) return { error: 'Missing SUPABASE_SERVICE_ROLE_KEY in environment variables' };
+  if (!supabaseServiceKey) return { error: 'Missing SUPABASE_SERVICE_ROLE_KEY' };
 
   try {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const fileName = `${Date.now()}-${en.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.mp3`;
 
-    // 1. Generate Audio using Edge TTS with Promise wrapper
-    // Cast to any to bypass library type definition issues on Vercel build
-    const tts: any = new MsEdgeTTS();
+    // 1. Generate Audio using Edge TTS
+    // According to the most stable usage of msedge-tts, we should use the built-in 
+    // methods that handle the websocket stream internally.
+    const tts = new MsEdgeTTS();
     await tts.setMetadata("en-US-AvaNeural", OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3);
     
-    const audioBuffer = await new Promise<Buffer>((resolve, reject) => {
-      const chunks: Buffer[] = [];
-      
-      tts.on("data", (chunk: Buffer) => {
-        chunks.push(chunk);
-      });
+    // In many versions of this library, push returns the full buffer when awaited
+    // or provides a simple way to get it without EventEmitter
+    const audioBuffer = await (tts as any).push(en);
 
-      tts.on("end", () => {
-        resolve(Buffer.concat(chunks));
-      });
-
-      tts.on("error", (err: any) => {
-        reject(err);
-      });
-
-      // Start the generation
-      tts.push(en);
-    });
+    if (!audioBuffer || audioBuffer.length === 0) {
+      throw new Error('Generated audio buffer is empty');
+    }
 
     // 2. Upload to Supabase Storage
     const { data: uploadData, error: uploadError } = await supabase.storage
