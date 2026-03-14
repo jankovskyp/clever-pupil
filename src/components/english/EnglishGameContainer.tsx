@@ -161,7 +161,7 @@ export default function EnglishGameContainer() {
     setSpellingInput('');
     const problem = generateEnglishProblem(currentWords, [selectedMode]);
     setCurrentProblem(problem);
-    if (problem?.audioText && (problem.type === 'listen' || problem.type === 'spelling')) setTimeout(() => playAudio(problem.audioText!), 300);
+    if (problem?.audioUrl && (problem.type === 'listen' || problem.type === 'spelling')) setTimeout(() => playAudio(problem.audioUrl!), 300);
     if (problem?.type === 'spelling') setTimeout(() => spellingInputRef.current?.focus(), 100);
   }, [getFilteredWords, selectedMode]);
 
@@ -328,7 +328,7 @@ export default function EnglishGameContainer() {
           <div className="text-center text-board-black"><span className="text-lg font-black text-slate-400">Ve výběru: <span className={filteredCount < 4 ? 'text-error' : 'text-[#38BDF8]'}>{filteredCount}</span> slovíček</span></div>
         </div>
 
-        <div className="flex flex-col gap-4 items-center text-board-black text-board-black">
+        <div className="flex flex-col gap-4 items-center text-board-black text-board-black text-board-black">
           <p className="text-xl font-black text-slate-300 uppercase tracking-widest text-slate-300">Vyber jeden režim</p>
           <div className="grid grid-cols-2 gap-4 w-full max-w-xl text-board-black">
             {(['en-cz', 'cz-en', 'listen', 'spelling'] as EnglishMode[]).map(op => {
@@ -347,9 +347,9 @@ export default function EnglishGameContainer() {
     const isSpelling = currentProblem.type === 'spelling';
     const isListen = currentProblem.type === 'listen';
     return (
-      <div className="flex flex-col h-full relative p-4 font-sans text-board-black">
+      <div className="flex flex-col h-full relative p-4 font-sans text-board-black text-board-black">
         <div className="flex justify-between items-center mb-4 text-board-black">
-          <div className="flex gap-3 items-center text-board-black">
+          <div className="flex gap-3 items-center text-board-black text-board-black text-board-black">
              <DeskButton variant="outline" size="md" onClick={() => setGameState('HOME')} className="border-[#38BDF8] border-4"><Home className="w-6 h-6 text-[#38BDF8]" /></DeskButton>
              <div className="flex gap-2 text-board-black">
                <div className="bg-white rounded-xl px-5 py-2 shadow-sm border-2 border-slate-50 flex items-center gap-2"><CheckCircle2 className="text-success w-6 h-6" /><span className="text-3xl font-black text-success leading-none">{stats.correct}</span></div>
@@ -358,7 +358,7 @@ export default function EnglishGameContainer() {
           </div>
 
           {gameMode === 'competition' && (
-            <div className="absolute left-1/2 -translate-x-1/2 top-6 flex flex-col items-center">
+            <div className="absolute left-1/2 -translate-x-1/2 top-6 flex flex-col items-center text-board-black">
                <div className={`bg-board-black text-white px-8 py-3 rounded-2xl flex items-center gap-4 transition-transform duration-300 ${scorePop ? 'scale-125' : 'scale-100'}`}>
                   <Star className="w-8 h-8 text-[#38BDF8]" fill="currentColor" />
                   <span className="text-5xl font-black">{liveScore}</span>
@@ -367,16 +367,16 @@ export default function EnglishGameContainer() {
           )}
 
           {gameMode === 'competition' && (
-            <div className="flex flex-col items-end gap-1 w-1/4">
-              <div className="flex items-center gap-2 text-board-black"><Timer className="w-6 h-6 text-board-black" /><span className="text-3xl font-mono font-black text-board-black">{timeLeft}s</span></div>
+            <div className="flex flex-col items-end gap-1 w-1/4 text-board-black">
+              <div className="flex items-center gap-2 text-board-black text-board-black text-board-black"><Timer className="w-6 h-6 text-board-black" /><span className="text-3xl font-mono font-black text-board-black">{timeLeft}s</span></div>
               <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden border-2 border-white shadow-inner"><div className="h-full bg-[#38BDF8] transition-all duration-1000 ease-linear" style={{ width: `${(timeLeft / 60) * 100}%` }} /></div>
             </div>
           )}
         </div>
-        <div className="flex-1 flex flex-col items-center justify-center gap-8 text-board-black">
+        <div className="flex-1 flex flex-col items-center justify-center gap-8 text-board-black text-board-black text-board-black">
           <div className="flex flex-col items-center gap-6 text-board-black">
-            {(isListen || isSpelling) && currentProblem.audioText && (
-               <DeskButton variant="outline" size="lg" className="rounded-full w-48 h-48 border-8 border-[#38BDF8] text-[#38BDF8] shadow-xl hover:bg-[#38BDF8]/10 transition-all" onClick={() => playAudio(currentProblem.audioText!)}>
+            {(isListen || isSpelling) && currentProblem.audioUrl && (
+               <DeskButton variant="outline" size="lg" className="rounded-full w-48 h-48 border-8 border-[#38BDF8] text-[#38BDF8] shadow-xl hover:bg-[#38BDF8]/10 transition-all text-board-black" onClick={() => playAudio(currentProblem.audioUrl!)}>
                  <Volume2 className="w-24 h-24 text-[#38BDF8]" strokeWidth={3} />
                </DeskButton>
             )}
@@ -386,12 +386,12 @@ export default function EnglishGameContainer() {
           </div>
           <div className="w-full max-w-4xl mt-8 text-board-black">
             {isSpelling ? (
-              <form onSubmit={handleSpellingSubmit} className="flex flex-col items-center gap-6 w-full px-4 text-board-black">
+              <form onSubmit={handleSpellingSubmit} className="flex flex-col items-center gap-6 w-full px-4 text-board-black text-board-black text-board-black">
                  <input ref={spellingInputRef} type="text" value={spellingInput} onChange={(e) => setSpellingInput(e.target.value)} className={`w-full max-w-2xl text-center text-6xl font-black py-8 rounded-[2rem] border-8 outline-none bg-white text-board-black transition-all ${feedback === 'correct' ? 'border-success text-success bg-success/10' : feedback === 'wrong' ? 'border-error text-error bg-error/10' : 'border-slate-200 focus:border-[#38BDF8]'}`} autoFocus autoCapitalize="none" autoComplete="off" disabled={feedback === 'correct'} />
-                 <DeskButton size="xl" type="submit" variant="info" className="w-full max-w-2xl h-24" disabled={feedback === 'correct'}><ArrowRight className="w-12 h-12 text-white" /></DeskButton>
+                 <DeskButton size="xl" type="submit" variant="info" className="w-full max-w-2xl h-24 text-board-black" disabled={feedback === 'correct'}><ArrowRight className="w-12 h-12 text-white" /></DeskButton>
               </form>
             ) : (
-              <div className="grid gap-6 w-full grid-cols-2 px-4 text-board-black">
+              <div className="grid gap-6 w-full grid-cols-2 px-4 text-board-black text-board-black text-board-black text-board-black">
                 {currentProblem.options?.map((opt, i) => (
                   <DeskButton key={i} size="xl" variant={feedback === 'correct' && opt === currentProblem.correctAnswer ? 'success' : clickedOptions.has(opt) ? 'error' : 'outline'} className={`w-full h-32 text-4xl md:text-5xl font-black ${feedback !== 'correct' && !clickedOptions.has(opt) ? 'border-[#38BDF8] text-board-black' : ''}`} onClick={() => handleAnswer(opt)} disabled={feedback === 'correct' || clickedOptions.has(opt)}>{opt}</DeskButton>
                 ))}
@@ -408,25 +408,25 @@ export default function EnglishGameContainer() {
     const accuracy = Math.round((stats.correct / (stats.total || 1)) * 100);
     const finalScore = liveScore;
     return (
-      <div className="flex flex-col items-center justify-center h-full gap-4 p-4 font-sans overflow-y-auto text-board-black">
+      <div className="flex flex-col items-center justify-center h-full gap-4 p-4 font-sans overflow-y-auto text-board-black text-board-black text-board-black">
         <div className="flex flex-col items-center text-board-black">
           {isSad ? (<Frown className="w-20 h-20 text-error mb-2 animate-bounce" />) : (<Trophy className="w-20 h-20 text-[#38BDF8] mb-2 animate-bounce text-[#38BDF8]" />)}
           <h2 className="text-5xl font-black italic text-board-black">{isSad ? 'Zkus to znovu!' : 'Super výkon!'}</h2>
         </div>
-        <div className="bg-white rounded-[2.5rem] p-6 shadow-2xl border-4 border-slate-50 flex flex-col gap-4 items-center w-full max-w-md text-board-black text-board-black">
+        <div className="bg-white rounded-[2.5rem] p-6 shadow-2xl border-4 border-slate-50 flex flex-col gap-4 items-center w-full max-w-md text-board-black text-board-black text-board-black text-board-black text-board-black">
           <div className="grid grid-cols-2 w-full gap-3 text-board-black">
-             <div className="bg-slate-50 p-4 rounded-2xl text-center flex flex-col"><span className="text-slate-400 font-bold uppercase text-[10px] tracking-widest text-slate-400">Správně</span><span className="text-4xl font-black text-success">{stats.correct}</span></div>
-             <div className="bg-slate-50 p-4 rounded-2xl text-center flex flex-col"><span className="text-slate-400 font-bold uppercase text-[10px] tracking-widest text-slate-400">Úspěšnost</span><span className="text-4xl font-black text-carpet-green text-carpet-green">{accuracy}%</span></div>
+             <div className="bg-slate-50 p-4 rounded-2xl text-center flex flex-col text-board-black"><span className="text-slate-400 font-bold uppercase text-[10px] tracking-widest text-slate-400">Správně</span><span className="text-4xl font-black text-success text-success">{stats.correct}</span></div>
+             <div className="bg-slate-50 p-4 rounded-2xl text-center flex flex-col text-board-black"><span className="text-slate-400 font-bold uppercase text-[10px] tracking-widest text-slate-400">Úspěšnost</span><span className="text-4xl font-black text-carpet-green text-carpet-green">{accuracy}%</span></div>
           </div>
-          <div className="flex flex-col items-center gap-1 bg-board-black text-white w-full p-4 rounded-2xl text-white">
-             <span className="text-slate-400 font-bold uppercase text-[10px] tracking-widest text-slate-400">Body</span>
-             <div className="flex items-center gap-3 text-white"><Star className="w-6 h-6 text-[#38BDF8]" fill="currentColor" /><span className="text-5xl font-black text-white">{finalScore}</span></div>
+          <div className="flex flex-col items-center gap-1 bg-board-black text-white w-full p-4 rounded-2xl text-white text-white">
+             <span className="text-slate-400 font-bold uppercase text-[10px] tracking-widest text-slate-400 text-slate-400">Body</span>
+             <div className="flex items-center gap-3 text-white"><Star className="w-6 h-6 text-[#38BDF8] text-[#38BDF8]" fill="currentColor" /><span className="text-5xl font-black text-white text-white">{finalScore}</span></div>
           </div>
           {gameMode === 'competition' && (
-            <div className="flex flex-col gap-3 w-full mt-2 pt-4 border-t-2 border-slate-100 text-board-black text-board-black text-board-black">
+            <div className="flex flex-col gap-3 w-full mt-2 pt-4 border-t-2 border-slate-100 text-board-black text-board-black text-board-black text-board-black">
                <input type="text" value={playerName} onChange={(e) => setPlayerName(e.target.value.slice(0, 12))} placeholder="TVOJE JMÉNO" className="w-full text-center text-3xl font-black uppercase py-4 rounded-2xl border-4 border-slate-100 focus:border-[#38BDF8] outline-none bg-white text-board-black placeholder:text-slate-200 transition-all text-board-black" autoFocus />
-               <DeskButton size="lg" variant="info" onClick={saveToLeaderboard} disabled={!playerName.trim() || isLoading} className="py-4">
-                  <div className="flex items-center justify-center gap-3 whitespace-nowrap text-white text-white text-white">
+               <DeskButton size="lg" variant="secondary" onClick={saveToLeaderboard} disabled={!playerName.trim() || isLoading} className="py-4 text-board-black">
+                  <div className="flex items-center justify-center gap-3 whitespace-nowrap text-white text-white text-white text-white">
                     {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Save className="w-6 h-6 text-white" />}
                     <span className="text-xl font-bold uppercase text-white text-white">ULOŽIT VÝSLEDEK</span>
                   </div>
@@ -434,7 +434,7 @@ export default function EnglishGameContainer() {
             </div>
           )}
         </div>
-        <DeskButton size="md" variant="outline" className="border-slate-200 shadow-none py-3 text-board-black" onClick={() => setGameState('HOME')}><RotateCcw className="mr-2 w-5 h-5 text-board-black" /> Zkusit znovu</DeskButton>
+        <DeskButton size="md" variant="outline" className="border-slate-200 shadow-none py-3 text-board-black text-board-black" onClick={() => setGameState('HOME')}><RotateCcw className="mr-2 w-5 h-5 text-board-black" /> Zkusit znovu</DeskButton>
       </div>
     );
   }
