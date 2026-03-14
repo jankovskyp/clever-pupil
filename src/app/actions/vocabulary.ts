@@ -15,14 +15,27 @@ export async function addVocabularyWord(en: string, cz: string) {
     const fileName = `${Date.now()}-${en.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.mp3`;
 
     // 1. Generate Audio using Edge TTS
-    // According to the most stable usage of msedge-tts, we should use the built-in 
-    // methods that handle the websocket stream internally.
     const tts = new MsEdgeTTS();
     await tts.setMetadata("en-US-AvaNeural", OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3);
     
-    // In many versions of this library, push returns the full buffer when awaited
-    // or provides a simple way to get it without EventEmitter
-    const audioBuffer = await (tts as any).push(en);
+    // Use toStream method which returns a Readable stream
+    const { audioStream } = tts.toStream(en);
+    
+    const audioBuffer = await new Promise<Buffer>((resolve, reject) => {
+      const chunks: Buffer[] = [];
+      
+      audioStream.on("data", (chunk: Buffer) => {
+        chunks.push(chunk);
+      });
+
+      audioStream.on("end", () => {
+        resolve(Buffer.concat(chunks));
+      });
+
+      audioStream.on("error", (err) => {
+        reject(err);
+      });
+    });
 
     if (!audioBuffer || audioBuffer.length === 0) {
       throw new Error('Generated audio buffer is empty');
