@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 
 interface DeskButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'success' | 'error';
+  variant?: 'primary' | 'secondary' | 'outline' | 'success' | 'error' | 'info';
   size?: 'md' | 'lg' | 'xl';
 }
 
@@ -14,8 +14,9 @@ export function DeskButton({
   const variants = {
     primary: "bg-class-green text-board-black shadow-[0_8px_0_0_rgba(163,230,53,0.3)] active:shadow-none translate-y-[-4px] active:translate-y-0",
     secondary: "bg-carpet-green text-white shadow-[0_8px_0_0_rgba(20,83,45,0.3)] active:shadow-none translate-y-[-4px] active:translate-y-0",
-    outline: "border-4 border-class-green text-board-black",
-    success: "bg-success text-white",
+    info: "bg-[#38BDF8] text-white shadow-[0_8px_0_0_rgba(56,189,248,0.3)] active:shadow-none translate-y-[-4px] active:translate-y-0",
+    outline: "border-4 border-slate-200 text-board-black bg-white hover:bg-slate-50 shadow-[0_4px_0_0_rgba(0,0,0,0.05)] active:shadow-none translate-y-[-2px] active:translate-y-0",
+    success: "bg-success text-white shadow-[0_8px_0_0_rgba(34,197,94,0.3)] active:shadow-none translate-y-[-4px] active:translate-y-0",
     error: "bg-error text-white shadow-none translate-y-0 scale-95 opacity-50",
   };
 
