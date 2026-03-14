@@ -6,6 +6,7 @@ export interface VocabularyWord {
   cz: string;
   audio_url?: string; // New field for Cloud Storage URL
   created_at: string;
+  distractors?: { en: string; cz: string }[];
 }
 
 export interface EnglishProblem {
