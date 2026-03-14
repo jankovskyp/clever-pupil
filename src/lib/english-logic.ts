@@ -12,12 +12,11 @@ export const generateEnglishProblem = (
   words: VocabularyWord[], 
   modes: EnglishMode[]
 ): EnglishProblem | null => {
-  if (words.length < 4) return null; // We need at least 4 words for options
+  if (words.length < 4) return null;
 
   const mode = modes[getRandomInt(0, modes.length - 1)];
   const correctWord = words[getRandomInt(0, words.length - 1)];
   
-  // Get 3 random wrong words
   const wrongWords = shuffleArray(words.filter(w => w.id !== correctWord.id)).slice(0, 3);
   const optionsList = shuffleArray([correctWord, ...wrongWords]);
 
@@ -31,7 +30,7 @@ export const generateEnglishProblem = (
         questionText: correctWord.en,
         correctAnswer: correctWord.cz,
         options: optionsList.map(w => w.cz),
-        audioText: correctWord.en // Optional: play when showing
+        audioUrl: correctWord.audio_url
       };
     case 'cz-en':
       return {
@@ -45,30 +44,24 @@ export const generateEnglishProblem = (
       return {
         id,
         type: mode,
-        questionText: 'Poslouchej...',
+        questionText: '?',
         correctAnswer: correctWord.en,
         options: optionsList.map(w => w.en),
-        audioText: correctWord.en
+        audioUrl: correctWord.audio_url
       };
     case 'spelling':
       return {
         id,
         type: mode,
-        questionText: 'Napiš, co slyšíš',
-        correctAnswer: correctWord.en.toLowerCase(), // Normalize for checking
-        audioText: correctWord.en
+        questionText: '?',
+        correctAnswer: correctWord.en.toLowerCase(),
+        audioUrl: correctWord.audio_url
       };
   }
 };
 
-export const playAudio = (text: string) => {
-  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-    // Cancel any ongoing speech
-    window.speechSynthesis.cancel();
-    
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US'; // or en-GB
-    utterance.rate = 0.8; // Slightly slower for kids
-    window.speechSynthesis.speak(utterance);
-  }
+export const playAudio = (url: string) => {
+  if (!url) return;
+  const audio = new Audio(url);
+  audio.play().catch(e => console.error('Failed to play audio:', e));
 };

@@ -4,6 +4,7 @@ export interface VocabularyWord {
   id: string;
   en: string;
   cz: string;
+  audio_url?: string; // New field for Cloud Storage URL
   created_at: string;
 }
 
@@ -12,8 +13,8 @@ export interface EnglishProblem {
   type: EnglishMode;
   questionText: string;
   correctAnswer: string;
-  options?: string[]; // Used for all modes except spelling
-  audioText?: string; // The text to be spoken via Web Speech API
+  options?: string[];
+  audioUrl?: string; // Changed from audioText to audioUrl
 }
 
 export type EnglishGameState = 'HOME' | 'SETUP' | 'PLAYING' | 'RESULTS' | 'LEADERBOARD';
