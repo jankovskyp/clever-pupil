@@ -18,24 +18,25 @@ export const generateEnglishProblem = (
   const correctWord = words[getRandomInt(0, words.length - 1)];
   const id = Math.random().toString(36).substring(2, 9);
 
+  // Pool of basic words for generic fallback
   const basicPool = ['cat', 'dog', 'apple', 'sun', 'red', 'blue', 'one', 'car', 'tree', 'book'];
 
-  const getOptions = (isEn: boolean, type: 'semantic' | 'visual') => {
-    let candidates: string[] = [];
-    
-    if (correctWord.distractors) {
-      if (type === 'semantic' && correctWord.distractors.semantic) {
-        candidates = correctWord.distractors.semantic.map(d => isEn ? d.en : d.cz);
-      } else if (type === 'visual' && correctWord.distractors.visual) {
-        candidates = correctWord.distractors.visual;
-      }
-    }
+  const getOptions = () => {
+    // In simplified mode, distractors are just a flat list of strings (similar English words)
+    const candidates = correctWord.distractors || [];
 
-    const otherWords = words.filter(w => w.id !== correctWord.id).map(w => isEn ? w.en : w.cz);
-    let finalPool = [...new Set([...candidates, ...otherWords, ...basicPool])];
-    finalPool = finalPool.filter(w => w.toLowerCase() !== (isEn ? correctWord.en : correctWord.cz).toLowerCase());
+    // Fallback: Add other words from the main vocabulary
+    const otherWords = words
+      .filter(w => w.id !== correctWord.id)
+      .map(w => w.en);
     
-    return shuffleArray([isEn ? correctWord.en : correctWord.cz, ...shuffleArray(finalPool).slice(0, 3)]);
+    // Final mixing and slicing
+    let finalPool = [...new Set([...candidates, ...otherWords, ...basicPool])];
+    
+    // Filter out the correct answer from the distractors pool
+    finalPool = finalPool.filter(w => w.toLowerCase() !== correctWord.en.toLowerCase());
+    
+    return shuffleArray([correctWord.en, ...shuffleArray(finalPool).slice(0, 3)]);
   };
 
   switch (mode) {
@@ -45,7 +46,7 @@ export const generateEnglishProblem = (
         type: mode,
         questionText: '?',
         correctAnswer: correctWord.en,
-        options: getOptions(true, 'visual'),
+        options: getOptions(),
         audioUrl: correctWord.audio_url
       };
     case 'spelling':
@@ -57,9 +58,6 @@ export const generateEnglishProblem = (
         audioUrl: correctWord.audio_url
       };
   }
-
-  // This part is now unreachable given the modes are restricted, but kept for safety.
-  return null;
 };
 
 export const playAudio = (url: string) => {
