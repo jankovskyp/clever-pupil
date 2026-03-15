@@ -2,63 +2,65 @@
 
 import { MsEdgeTTS, OUTPUT_FORMAT } from 'msedge-tts';
 import { createClient } from '@supabase/supabase-js';
-import { translateWord } from './translate';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
-const BASIC_POOL = [
-  'cat', 'dog', 'apple', 'ball', 'red', 'blue', 'green', 'one', 'two', 'three', 
-  'home', 'tree', 'sun', 'book', 'car', 'milk', 'water', 'fish', 'bird', 'pen',
-  'box', 'star', 'cake', 'egg', 'hat', 'frog', 'jump', 'run', 'smile', 'love'
-];
+// Logic to generate similar-looking/sounding words
+function generateVisualDistractors(word: string): string[] {
+  const variations = new Set<string>();
+  const letters = word.split('');
 
-async function fetchFromDatamuse(query: string) {
-  try {
-    const res = await fetch(`https://api.datamuse.com/words?${query}&max=20`);
-    const data = await res.json();
-    return data.map((item: any) => item.word.toLowerCase());
-  } catch (e) {
-    console.error('Datamuse error:', e);
-    return [];
+  // 1. Swap adjacent letters
+  for (let i = 0; i < letters.length - 1; i++) {
+    const swap = [...letters];
+    [swap[i], swap[i+1]] = [swap[i+1], swap[i]];
+    variations.add(swap.join(''));
   }
+
+  // 2. Remove one letter
+  if (letters.length > 3) {
+    for (let i = 0; i < letters.length; i++) {
+      const removed = [...letters];
+      removed.splice(i, 1);
+      variations.add(removed.join(''));
+    }
+  }
+
+  // 3. Repeat one letter
+  for (let i = 0; i < letters.length; i++) {
+    const repeated = [...letters];
+    repeated.splice(i, 0, letters[i]);
+    variations.add(repeated.join(''));
+  }
+
+  return Array.from(variations)
+    .filter(v => v !== word && v.length > 1)
+    .sort(() => 0.5 - Math.random())
+    .slice(0, 15);
 }
 
 async function getEnhancedDistractors(en: string) {
   const enLower = en.toLowerCase();
   
-  // 1. SEMANTIC (Meaning related)
-  const semanticCandidates = await fetchFromDatamuse(`ml=${encodeURIComponent(enLower)}`);
-  const filteredSemantic = semanticCandidates
-    .filter((w: string) => w !== enLower && !w.includes(' ') && !w.includes('-') && w.length > 1)
-    .slice(0, 10);
+  // Try to get real similar words from Datamuse (sounds like)
+  let soundsLike: string[] = [];
+  try {
+    const res = await fetch(`https://api.datamuse.com/words?sl=${encodeURIComponent(enLower)}&max=10`);
+    const data = await res.json();
+    soundsLike = data.map((item: any) => item.word.toLowerCase());
+  } catch (e) {}
 
-  const semantic = await Promise.all(
-    filteredSemantic.map(async (word: string) => {
-      const cz = await translateWord(word);
-      return { en: word, cz };
-    })
-  );
-
-  // 2. VISUAL / PHONETIC (Sound or spelling related)
-  // sl = sounds like, sp = spelled like (with wildcards)
-  const [soundsLike, spelledLike] = await Promise.all([
-    fetchFromDatamuse(`sl=${encodeURIComponent(enLower)}`),
-    fetchFromDatamuse(`sp=${encodeURIComponent(enLower)}?*`) // Words with extra chars
-  ]);
-
-  const visual = [...new Set([...soundsLike, ...spelledLike])]
+  // Mix real words with generated variations
+  const visual = [...new Set([...soundsLike, ...generateVisualDistractors(enLower)])]
     .filter((w: string) => w !== enLower && !w.includes(' ') && w.length > 1)
-    .slice(0, 15);
+    .slice(0, 20);
 
-  return {
-    semantic: semantic.filter(d => d.cz && d.cz.toLowerCase() !== d.en.toLowerCase()),
-    visual
-  };
+  return visual;
 }
 
-export async function addVocabularyWord(en: string, cz: string) {
-  if (!en || !cz) return { error: 'Chybí slovíčka' };
+export async function addVocabularyWord(en: string) {
+  if (!en) return { error: 'Chybí slovíčko' };
   if (!supabaseServiceKey) return { error: 'Chybí klíč SUPABASE_SERVICE_ROLE_KEY' };
 
   try {
@@ -71,7 +73,7 @@ export async function addVocabularyWord(en: string, cz: string) {
       .eq('en', enNormalized)
       .maybeSingle();
 
-    if (existing) return { error: `Slovíčko "${enNormalized}" už v databázi existuje!` };
+    if (existing) return { error: `Slovíčko "${enNormalized}" už existuje!` };
 
     const distractors = await getEnhancedDistractors(enNormalized);
     const audioUrl = await generateAndUploadAudio(enNormalized, supabase);
@@ -80,7 +82,6 @@ export async function addVocabularyWord(en: string, cz: string) {
       .from('vocabulary')
       .insert([{ 
         en: enNormalized, 
-        cz: cz.trim().toLowerCase(), 
         audio_url: audioUrl,
         distractors: distractors,
         created_at: new Date().toISOString()
@@ -117,7 +118,6 @@ async function generateAndUploadAudio(en: string, supabase: any) {
   return publicUrl;
 }
 
-// ADMIN FUNCTION: Regenerate missing data for all words
 export async function adminRegenerateAll() {
   if (!supabaseServiceKey) return { error: 'Unauthorized' };
   const supabase = createClient(supabaseUrl, supabaseServiceKey);
@@ -128,23 +128,14 @@ export async function adminRegenerateAll() {
 
     let updatedCount = 0;
     for (const word of (words || [])) {
-      const needsAudio = !word.audio_url;
-      const needsDistractors = !word.distractors || !word.distractors.semantic;
+      const distractors = await getEnhancedDistractors(word.en);
+      const audioUrl = word.audio_url || await generateAndUploadAudio(word.en, supabase);
 
-      if (needsAudio || needsDistractors) {
-        const updateData: any = {};
-        
-        if (needsDistractors) {
-          updateData.distractors = await getEnhancedDistractors(word.en);
-        }
-        
-        if (needsAudio) {
-          updateData.audio_url = await generateAndUploadAudio(word.en, supabase);
-        }
-
-        await supabase.from('vocabulary').update(updateData).eq('id', word.id);
-        updatedCount++;
-      }
+      await supabase.from('vocabulary').update({
+        distractors,
+        audio_url: audioUrl
+      }).eq('id', word.id);
+      updatedCount++;
     }
 
     return { success: true, count: updatedCount };

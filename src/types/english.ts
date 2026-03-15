@@ -1,15 +1,11 @@
-export type EnglishMode = 'en-cz' | 'cz-en' | 'listen' | 'spelling';
+export type EnglishMode = 'listen' | 'spelling';
 
 export interface VocabularyWord {
   id: string;
   en: string;
-  cz: string;
   audio_url?: string;
   created_at: string;
-  distractors?: {
-    semantic: { en: string; cz: string }[]; // Words related by meaning (cat, puppy for "dog")
-    visual: string[]; // Words that look or sound similar (dot, dig, dogs for "dog")
-  };
+  distractors?: string[]; // Only visual/phonetic similar words
 }
 
 export interface EnglishProblem {
