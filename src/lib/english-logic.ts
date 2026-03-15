@@ -18,26 +18,20 @@ export const generateEnglishProblem = (
   const correctWord = words[getRandomInt(0, words.length - 1)];
   const id = Math.random().toString(36).substring(2, 9);
 
-  // Pool of basic words for generic fallback
   const basicPool = ['cat', 'dog', 'apple', 'sun', 'red', 'blue', 'one', 'car', 'tree', 'book'];
 
   const getOptions = (isEn: boolean, type: 'semantic' | 'visual') => {
     let candidates: string[] = [];
     
     if (correctWord.distractors) {
-      if (type === 'semantic') {
+      if (type === 'semantic' && correctWord.distractors.semantic) {
         candidates = correctWord.distractors.semantic.map(d => isEn ? d.en : d.cz);
-      } else {
-        candidates = correctWord.distractors.visual; // Visual always uses EN words
+      } else if (type === 'visual' && correctWord.distractors.visual) {
+        candidates = correctWord.distractors.visual;
       }
     }
 
-    // Fallback: Add other words from the main vocabulary
-    const otherWords = words
-      .filter(w => w.id !== correctWord.id)
-      .map(w => isEn ? w.en : w.cz);
-    
-    // Final mixing and slicing
+    const otherWords = words.filter(w => w.id !== correctWord.id).map(w => isEn ? w.en : w.cz);
     let finalPool = [...new Set([...candidates, ...otherWords, ...basicPool])];
     finalPool = finalPool.filter(w => w.toLowerCase() !== (isEn ? correctWord.en : correctWord.cz).toLowerCase());
     
@@ -45,24 +39,6 @@ export const generateEnglishProblem = (
   };
 
   switch (mode) {
-    case 'en-cz':
-      return {
-        id,
-        type: mode,
-        questionText: correctWord.en,
-        correctAnswer: correctWord.cz,
-        options: getOptions(false, 'semantic'),
-        audioUrl: correctWord.audio_url
-      };
-    case 'cz-en':
-      return {
-        id,
-        type: mode,
-        questionText: correctWord.cz,
-        correctAnswer: correctWord.en,
-        options: getOptions(true, 'semantic'),
-        audioUrl: correctWord.audio_url
-      };
     case 'listen':
       return {
         id,
@@ -81,6 +57,9 @@ export const generateEnglishProblem = (
         audioUrl: correctWord.audio_url
       };
   }
+
+  // This part is now unreachable given the modes are restricted, but kept for safety.
+  return null;
 };
 
 export const playAudio = (url: string) => {
