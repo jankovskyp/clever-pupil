@@ -8,52 +8,75 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
 // Logic to generate similar-looking/sounding words
 function generateVisualDistractors(word: string): string[] {
-  const variations = new Set<string>();
-  const letters = word.split('');
+  const misspellings = new Set<string>();
+  const vowels = ['a', 'e', 'i', 'o', 'u', 'y'];
+  const baseWord = word.trim().toLowerCase();
 
-  // 1. Swap adjacent letters
-  for (let i = 0; i < letters.length - 1; i++) {
-    const swap = [...letters];
-    [swap[i], swap[i+1]] = [swap[i+1], swap[i]];
-    variations.add(swap.join(''));
-  }
-
-  // 2. Remove one letter
-  if (letters.length > 3) {
-    for (let i = 0; i < letters.length; i++) {
-      const removed = [...letters];
-      removed.splice(i, 1);
-      variations.add(removed.join(''));
+  // 1. Double letters or remove double letters
+  for (let i = 0; i < baseWord.length - 1; i++) {
+    if (baseWord[i] === baseWord[i + 1]) {
+      misspellings.add(baseWord.slice(0, i) + baseWord.slice(i + 1)); // remove one
+    } else {
+      misspellings.add(baseWord.slice(0, i + 1) + baseWord[i] + baseWord.slice(i + 1)); // double it
     }
   }
 
-  // 3. Repeat one letter
-  for (let i = 0; i < letters.length; i++) {
-    const repeated = [...letters];
-    repeated.splice(i, 0, letters[i]);
-    variations.add(repeated.join(''));
+  // 2. Replace vowels with other vowels
+  for (let i = 0; i < baseWord.length; i++) {
+    if (vowels.includes(baseWord[i])) {
+      vowels.filter(v => v !== baseWord[i]).forEach(v => {
+        misspellings.add(baseWord.slice(0, i) + v + baseWord.slice(i + 1));
+      });
+    }
   }
 
-  return Array.from(variations)
-    .filter(v => v !== word && v.length > 1)
+  // 3. Swap adjacent letters
+  for (let i = 0; i < baseWord.length - 1; i++) {
+    misspellings.add(baseWord.slice(0, i) + baseWord[i + 1] + baseWord[i] + baseWord.slice(i + 2));
+  }
+
+  // 4. Common phonetic substitutions
+  const phoneticMap: Record<string, string[]> = {
+    'ph': ['f'], 'f': ['ph', 'v'], 'c': ['k', 's'], 'k': ['c'], 's': ['c', 'z'], 'z': ['s'],
+    'ea': ['ee', 'e'], 'ee': ['ea', 'i'], 'ou': ['ow', 'o'], 'ow': ['ou'], 'th': ['d', 't', 'f'],
+    'ch': ['sh', 'tch'], 'sh': ['ch'], 'w': ['v'], 'v': ['w'], 'i': ['y'], 'y': ['i', 'j']
+  };
+
+  for (const [key, values] of Object.entries(phoneticMap)) {
+    if (baseWord.includes(key)) {
+      values.forEach(val => {
+        misspellings.add(baseWord.replace(key, val));
+      });
+    }
+  }
+
+  // 5. Remove one letter (for words > 2 letters)
+  if (baseWord.length > 2) {
+    for (let i = 0; i < baseWord.length; i++) {
+      misspellings.add(baseWord.slice(0, i) + baseWord.slice(i + 1));
+    }
+  }
+
+  return Array.from(misspellings)
+    .filter(v => v !== baseWord && v.length > (baseWord.length > 2 ? 1 : 0))
     .sort(() => 0.5 - Math.random())
     .slice(0, 15);
 }
 
 async function getEnhancedDistractors(en: string) {
-  const enLower = en.toLowerCase();
-  
+  const enLower = en.toLowerCase().trim();
+
   // Try to get real similar words from Datamuse (sounds like)
   let soundsLike: string[] = [];
   try {
     const res = await fetch(`https://api.datamuse.com/words?sl=${encodeURIComponent(enLower)}&max=10`);
     const data = await res.json();
     soundsLike = data.map((item: any) => item.word.toLowerCase());
-  } catch (e) {}
+  } catch (_) { }
 
   // Mix real words with generated variations
-  const visual = [...new Set([...soundsLike, ...generateVisualDistractors(enLower)])]
-    .filter((w: string) => w !== enLower && !w.includes(' ') && w.length > 1)
+  const visual = [...new Set([...generateVisualDistractors(enLower), ...soundsLike])]
+    .filter((w: string) => /^[a-z\s]+$/i.test(w) && w !== enLower && w.length > 1)
     .slice(0, 20);
 
   return visual;
@@ -80,8 +103,8 @@ export async function addVocabularyWord(en: string) {
 
     const { data, error: dbError } = await supabase
       .from('vocabulary')
-      .insert([{ 
-        en: enNormalized, 
+      .insert([{
+        en: enNormalized,
         audio_url: audioUrl,
         distractors: distractors,
         created_at: new Date().toISOString()
@@ -100,7 +123,7 @@ async function generateAndUploadAudio(en: string, supabase: any) {
   const fileName = `${Date.now()}-${en.replace(/[^a-z0-9]/gi, '_')}.mp3`;
   const tts: any = new MsEdgeTTS();
   await tts.setMetadata("en-US-AvaNeural", OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3);
-  
+
   const audioBuffer = await new Promise<Buffer>((resolve, reject) => {
     const { audioStream } = tts.toStream(en);
     const chunks: Buffer[] = [];
