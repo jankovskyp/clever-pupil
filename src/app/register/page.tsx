@@ -162,7 +162,7 @@ export default function RegisterScreen() {
                             type="text"
                             className="w-full max-w-md text-center text-4xl p-6 rounded-3xl border-4 border-slate-200 outline-none focus:border-[#38BDF8] transition-colors mb-8"
                             value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            onChange={(e) => setUsername(e.target.value.replace(/[^\p{L}\p{N}]/gu, ''))}
                             placeholder="Tvé jméno"
                             autoFocus
                             onKeyDown={(e) => e.key === 'Enter' && handleNextStep()}
@@ -187,7 +187,7 @@ export default function RegisterScreen() {
                                     className={`relative p-3 rounded-3xl border-4 transition-all hover:scale-105 ${avatar === a.id ? 'border-[#38BDF8] bg-sky-50 shadow-lg scale-105' : 'border-slate-100 hover:border-slate-300'
                                         }`}
                                 >
-                                    <Image src={`/avatars/${a.id}.png`} alt={a.label} width={100} height={100} className="w-full h-auto aspect-square" />
+                                    <Image src={`/avatars/${a.id}.png`} alt={a.label} width={100} height={100} className="w-full h-auto aspect-square mix-blend-multiply" />
                                 </button>
                             ))}
                         </div>

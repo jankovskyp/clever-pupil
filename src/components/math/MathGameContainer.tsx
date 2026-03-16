@@ -268,7 +268,7 @@ export default function MathGameContainer() {
                   </span>
                   <div className="flex-1 ml-3 flex items-center gap-3">
                     {entry.avatar && (
-                      <Image src={`/avatars/${entry.avatar}.png`} alt="avatar" width={32} height={32} className="w-8 h-8 drop-shadow-sm" />
+                      <Image src={`/avatars/${entry.avatar}.png`} alt="avatar" width={32} height={32} className="w-8 h-8 drop-shadow-sm mix-blend-multiply" />
                     )}
                     <p className="text-xl font-black leading-tight uppercase">{entry.name} <span className="text-[10px] text-slate-300 font-normal">({entry.range})</span></p>
                   </div>

@@ -151,7 +151,7 @@ export default function LoginScreen() {
             <div className="w-full max-w-5xl items-center flex flex-col relative z-0 mt-8 sm:mt-0">
                 <div className="flex items-center gap-6 mb-10 w-full justify-center">
                     <Image src="/icon.png" alt="Sova" width={100} height={100} className="w-20 h-20 sm:w-28 sm:h-28 mix-blend-multiply" priority />
-                    <h1 className="text-5xl sm:text-7xl md:text-8xl font-black italic drop-shadow-sm truncate min-w-0 flex-shrink">Chytrý Školák</h1>
+                    <h1 className="text-5xl sm:text-7xl md:text-8xl font-black italic drop-shadow-sm text-center">Chytrý Školák</h1>
                 </div>
 
                 {!selectedPlayer ? (
@@ -168,7 +168,7 @@ export default function LoginScreen() {
                                 placeholder="Tvé jméno"
                             />
                             <DeskButton size="lg" variant="info" type="submit" disabled={isLoading} className="w-full py-5 text-xl">
-                                {isLoading ? 'Hledám...' : 'Pokračovat'} <ArrowRight className="ml-2 w-7 h-7" />
+                                {isLoading ? 'Hledám...' : 'Přihlásit se'} <ArrowRight className="ml-2 w-7 h-7" />
                             </DeskButton>
                         </form>
 
@@ -189,7 +189,7 @@ export default function LoginScreen() {
                         </button>
 
                         <div className="w-24 h-24 mb-4 relative drop-shadow-sm">
-                            <Image src={`/avatars/${selectedPlayer.avatar}.png`} alt={selectedPlayer.username} fill className="object-contain" />
+                            <Image src={`/avatars/${selectedPlayer.avatar}.png`} alt={selectedPlayer.username} fill className="object-contain mix-blend-multiply" />
                         </div>
                         <h2 className="text-4xl font-black mb-8 text-center">{selectedPlayer.username}</h2>
 
