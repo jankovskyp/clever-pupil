@@ -341,7 +341,12 @@ export default function EnglishGameContainer() {
                           i === 2 ? <Medal className="w-8 h-8 text-amber-600" fill="currentColor" /> :
                             <span className="text-2xl font-black text-slate-300 italic text-slate-300">#{i + 1}</span>}
                     </span>
-                    <div className="flex-1 ml-3"><p className="text-xl font-black leading-tight uppercase text-board-black text-board-black">{entry.name} <span className="text-[10px] text-slate-300 font-normal text-slate-300">({labels[entry.mode as keyof typeof labels] || entry.mode})</span></p></div>
+                    <div className="flex-1 ml-3 flex items-center gap-3">
+                      {entry.avatar && (
+                        <Image src={`/avatars/${entry.avatar}.png`} alt="avatar" width={32} height={32} className="w-8 h-8 drop-shadow-sm" />
+                      )}
+                      <p className="text-xl font-black leading-tight uppercase text-board-black">{entry.name} <span className="text-[10px] text-slate-300 font-normal">({labels[entry.mode as keyof typeof labels] || entry.mode})</span></p>
+                    </div>
                     <div className="w-20 text-center text-xl font-black text-[#38BDF8] bg-[#38BDF8]/10 py-1 rounded-lg">{entry.accuracy}%</div>
                     <div className="w-16 text-center text-xl font-black text-success/70">{entry.total - entry.errors}</div>
                     <div className="w-16 text-center text-xl font-black text-error/40">{entry.errors}</div>
