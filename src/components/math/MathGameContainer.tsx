@@ -8,6 +8,7 @@ import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { Trophy, Timer, RotateCcw, Play, CheckCircle2, XCircle, Home, ListOrdered, Save, Frown, Star, Loader2, Medal } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { usePlayer } from '@/context/PlayerContext';
 
 const LOCAL_STORAGE_KEY = 'math-leaderboard-local';
 
@@ -24,7 +25,7 @@ export default function MathGameContainer() {
   const [feedback, setFeedback] = useState<'correct' | 'wrong' | null>(null);
   const [clickedOptions, setClickedOptions] = useState<Set<number | string>>(new Set());
   const [hasErrorInCurrent, setHasErrorInCurrent] = useState(false);
-  const [playerName, setPlayerName] = useState('');
+  const { player } = usePlayer();
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [leaderboardTab, setLeaderboardTab] = useState<NumberRange | 'all'>('all');
   const [isLoading, setIsLoading] = useState(false);
@@ -43,10 +44,24 @@ export default function MathGameContainer() {
       return;
     }
     try {
-      const { data, error } = await supabase.from('leaderboard').select('*').order('score', { ascending: false }).limit(100);
+      const { data, error } = await supabase
+        .from('leaderboard')
+        .select(`
+          *,
+          players ( avatar )
+        `)
+        .order('score', { ascending: false })
+        .limit(100);
+
       if (error) throw error;
-      if (data) setLeaderboard(data as LeaderboardEntry[]);
-    } catch (err) {
+      if (data) {
+        const mapped = data.map((d: { players?: { avatar?: string } } & Record<string, unknown>) => ({
+          ...d,
+          avatar: d.players?.avatar
+        }));
+        setLeaderboard(mapped as LeaderboardEntry[]);
+      }
+    } catch {
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
       setLeaderboard(saved ? JSON.parse(saved) : []);
     } finally {
@@ -57,18 +72,17 @@ export default function MathGameContainer() {
   useEffect(() => { if (gameState === 'LEADERBOARD') fetchLeaderboard(); }, [gameState, fetchLeaderboard]);
 
   const saveToLeaderboard = async () => {
-    if (!playerName.trim()) return;
     setIsLoading(true);
-
-    const entry: LeaderboardEntry = {
+    const entry: LeaderboardEntry & { player_id?: string } = {
       id: Math.random().toString(36).substring(2, 9),
-      name: playerName.trim().toUpperCase(),
+      name: player?.username || 'NEZNÁMÝ HRÁČ',
       score: liveScore,
       errors: stats.errors,
       total: stats.total,
       accuracy: Math.round((stats.correct / (stats.total || 1)) * 100),
       range: range,
       date: new Date().toLocaleDateString('cs-CZ'),
+      player_id: player?.id, // Optional, depending if UI relies on it locally immediately
     };
 
     const localSaved = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -76,12 +90,21 @@ export default function MathGameContainer() {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify([...localList, entry].sort((a, b) => b.score - a.score).slice(0, 100)));
 
     if (isSupabaseConfigured && supabase) {
-      try { await supabase.from('leaderboard').insert([{ name: entry.name, score: entry.score, errors: entry.errors, total: entry.total, accuracy: entry.accuracy, range: entry.range }]); } catch (err) { console.error(err); }
+      try {
+        await supabase.from('leaderboard').insert([{
+          name: entry.name,
+          score: entry.score,
+          errors: entry.errors,
+          total: entry.total,
+          accuracy: entry.accuracy,
+          range: entry.range,
+          player_id: player?.id
+        }]);
+      } catch (err: unknown) { console.error(err); }
     }
 
     setLeaderboardTab('all');
     setGameState('LEADERBOARD');
-    setPlayerName('');
     setIsLoading(false);
   };
 
@@ -156,7 +179,7 @@ export default function MathGameContainer() {
     } else if (timeLeft === 0 && gameState === 'PLAYING') {
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
       const localList = saved ? JSON.parse(saved) : [];
-      const bestScore = localList.length > 0 ? Math.max(...localList.map((e: any) => e.score)) : 0;
+      const bestScore = localList.length > 0 ? Math.max(...localList.map((e: LeaderboardEntry) => e.score)) : 0;
 
       if (liveScore > bestScore && liveScore > 0) {
         setShowNewRecord(true);
@@ -252,7 +275,12 @@ export default function MathGameContainer() {
                         i === 2 ? <Medal className="w-8 h-8 text-amber-600" fill="currentColor" /> :
                           <span className="text-2xl font-black text-slate-300 italic">#{i + 1}</span>}
                   </span>
-                  <div className="flex-1 ml-3"><p className="text-xl font-black leading-tight uppercase">{entry.name} <span className="text-[10px] text-slate-300 font-normal">({entry.range})</span></p></div>
+                  <div className="flex-1 ml-3 flex items-center gap-3">
+                    {entry.avatar && (
+                      <Image src={`/avatars/${entry.avatar}.png`} alt="avatar" width={32} height={32} className="w-8 h-8 drop-shadow-sm" />
+                    )}
+                    <p className="text-xl font-black leading-tight uppercase">{entry.name} <span className="text-[10px] text-slate-300 font-normal">({entry.range})</span></p>
+                  </div>
                   <div className="w-20 text-center text-xl font-black text-carpet-green bg-class-green/20 py-1 rounded-lg">{entry.accuracy}%</div>
                   <div className="w-16 text-center text-xl font-black text-success/70">{entry.total - entry.errors}</div>
                   <div className="w-16 text-center text-xl font-black text-error/40">{entry.errors}</div>
@@ -372,9 +400,9 @@ export default function MathGameContainer() {
             <div className="flex items-center gap-3"><Star className="w-6 h-6 text-class-green" fill="currentColor" /><span className="text-5xl font-black">{finalScore}</span></div>
           </div>
           {gameMode === 'competition' && (
-            <div className="flex flex-col gap-3 w-full mt-2 pt-4 border-t-2 border-slate-100">
-              <input type="text" value={playerName} onChange={(e) => setPlayerName(e.target.value.slice(0, 12))} placeholder="TVOJE JMÉNO" className="w-full text-center text-3xl font-black uppercase py-4 rounded-2xl border-4 border-slate-100 focus:border-class-green outline-none bg-slate-50 text-board-black placeholder:text-slate-200 transition-all" autoFocus />
-              <DeskButton size="lg" variant="secondary" onClick={saveToLeaderboard} disabled={!playerName.trim() || isLoading} className="py-4">
+            <div className="flex flex-col gap-3 w-full mt-2 pt-4 border-t-2 border-slate-100 items-center">
+              <p className="text-xl font-bold text-slate-400">Hraješ jako <span className="text-[#38BDF8]">{player?.username}</span></p>
+              <DeskButton size="lg" variant="secondary" onClick={saveToLeaderboard} disabled={isLoading} className="py-4 w-full">
                 <div className="flex items-center justify-center gap-3 whitespace-nowrap">
                   {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Save className="w-6 h-6" />}
                   <span className="text-xl font-bold uppercase">{isLoading ? 'Ukládám...' : 'Uložit výsledek'}</span>

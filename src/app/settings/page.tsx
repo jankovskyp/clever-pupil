@@ -15,15 +15,11 @@ export default function SettingsPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isAdminWorking, setIsAdminWorking] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  
+
   // Auth state
   const [password, setPassword] = useState('');
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [authError, setAuthError] = useState(false);
-
-  useEffect(() => { 
-    if (isAuthorized) fetchWords(); 
-  }, [isAuthorized]);
 
   const fetchWords = async () => {
     if (isSupabaseConfigured && supabase) {
@@ -32,8 +28,11 @@ export default function SettingsPage() {
     }
   };
 
-  const handleAuth = (e: React.FormEvent) => {
-    e.preventDefault();
+  useEffect(() => {
+    if (isAuthorized) fetchWords();
+  }, [isAuthorized]);
+
+  const handleAuth = () => {
     if (password === '0808') {
       setIsAuthorized(true);
       setAuthError(false);
@@ -53,7 +52,7 @@ export default function SettingsPage() {
       setEnWord('');
       fetchWords();
     } else {
-      setErrorMsg(result.error);
+      setErrorMsg(result.error || 'Neznámá chyba');
     }
     setIsLoading(false);
   };
@@ -77,7 +76,7 @@ export default function SettingsPage() {
         try {
           const fileName = audioUrl.split('/').pop();
           if (fileName) await supabase.storage.from('audio').remove([fileName]);
-        } catch (e) {}
+        } catch (e) { }
       }
       fetchWords();
     }
@@ -102,14 +101,14 @@ export default function SettingsPage() {
           <div className="bg-slate-100 p-8 rounded-full">
             <Lock className={`w-16 h-16 ${authError ? 'text-error animate-shake' : 'text-slate-400'}`} />
           </div>
-          
+
           <div className="text-center">
             <h1 className="text-4xl font-black italic mb-2">Vstup povolen jen pro dospělé</h1>
             <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Zadej tajný kód</p>
           </div>
 
-          <input 
-            type="password" 
+          <input
+            type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className={`w-full text-center text-6xl font-black py-6 rounded-3xl border-8 outline-none bg-slate-50 transition-all ${authError ? 'border-error text-error' : 'border-slate-100 focus:border-slate-400'}`}
@@ -153,10 +152,10 @@ export default function SettingsPage() {
           <form onSubmit={handleAdd} className="flex flex-col gap-6">
             <div className="flex flex-col gap-2">
               <label className="text-slate-400 font-bold uppercase tracking-widest text-xs ml-2">Anglicky</label>
-              <input 
-                type="text" 
-                value={enWord} 
-                onChange={(e) => setEnWord(e.target.value)} 
+              <input
+                type="text"
+                value={enWord}
+                onChange={(e) => setEnWord(e.target.value)}
                 className="w-full text-3xl font-black py-5 px-6 rounded-2xl border-4 border-slate-100 focus:border-[#38BDF8] outline-none bg-slate-50 text-slate-900"
                 placeholder="apple"
                 autoFocus
@@ -169,7 +168,7 @@ export default function SettingsPage() {
               </div>
             )}
             <DeskButton size="lg" variant="outline" className="w-full py-6 text-2xl border-slate-800 text-slate-800 bg-white" type="submit" disabled={!enWord.trim() || isLoading || !isSupabaseConfigured}>
-              {isLoading ? <Loader2 className="w-8 h-8 animate-spin" /> : <Plus className="w-8 h-8 mr-2" />} 
+              {isLoading ? <Loader2 className="w-8 h-8 animate-spin" /> : <Plus className="w-8 h-8 mr-2" />}
               {isLoading ? 'Ukládám...' : 'Přidat do slovníku'}
             </DeskButton>
           </form>
@@ -177,30 +176,30 @@ export default function SettingsPage() {
         </div>
 
         <div className="flex-1 bg-white p-8 rounded-[3rem] shadow-xl border-4 border-slate-100 flex flex-col overflow-hidden text-board-black">
-           <div className="flex justify-between items-center mb-6 text-board-black">
-              <h2 className="text-3xl font-black">Seznam slovíček</h2>
-              <span className="bg-slate-100 px-4 py-1 rounded-full text-slate-400 font-bold text-sm">Počet: {words.length}</span>
-           </div>
-           <div className="flex-1 overflow-y-auto pr-4 flex flex-col gap-3 text-board-black text-board-black">
-              {words.length === 0 ? (
-                <div className="flex-1 flex flex-col items-center justify-center opacity-20"><p className="text-2xl font-black uppercase">Prázdno</p></div>
-              ) : (
-                words.map((w) => (
-                  <div key={w.id} className="flex justify-between items-center bg-slate-50 p-5 rounded-2xl border-2 border-slate-100 hover:border-slate-200 transition-all text-board-black">
-                    <div className="flex items-center gap-8 text-3xl font-black text-board-black text-board-black">
-                      <div className="text-slate-900 uppercase">{w.en}</div>
-                      <div className="flex items-center gap-1 text-slate-300">
-                        <Calendar className="w-3 h-3" /><p className="text-[10px] font-bold uppercase tracking-wider">{new Date(w.created_at).toLocaleDateString('cs-CZ')}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      {w.audio_url && (<button onClick={() => playPreview(w.audio_url!)} className="text-[#38BDF8] hover:bg-white p-3 rounded-xl transition-all"><Volume2 className="w-6 h-6" /></button>)}
-                      <button onClick={() => handleDelete(w.id, w.audio_url)} className="text-slate-200 hover:text-error transition-colors p-3 rounded-xl"><Trash2 className="w-6 h-6" /></button>
+          <div className="flex justify-between items-center mb-6 text-board-black">
+            <h2 className="text-3xl font-black">Seznam slovíček</h2>
+            <span className="bg-slate-100 px-4 py-1 rounded-full text-slate-400 font-bold text-sm">Počet: {words.length}</span>
+          </div>
+          <div className="flex-1 overflow-y-auto pr-4 flex flex-col gap-3 text-board-black text-board-black">
+            {words.length === 0 ? (
+              <div className="flex-1 flex flex-col items-center justify-center opacity-20"><p className="text-2xl font-black uppercase">Prázdno</p></div>
+            ) : (
+              words.map((w) => (
+                <div key={w.id} className="flex justify-between items-center bg-slate-50 p-5 rounded-2xl border-2 border-slate-100 hover:border-slate-200 transition-all text-board-black">
+                  <div className="flex items-center gap-8 text-3xl font-black text-board-black text-board-black">
+                    <div className="text-slate-900 uppercase">{w.en}</div>
+                    <div className="flex items-center gap-1 text-slate-300">
+                      <Calendar className="w-3 h-3" /><p className="text-[10px] font-bold uppercase tracking-wider">{new Date(w.created_at).toLocaleDateString('cs-CZ')}</p>
                     </div>
                   </div>
-                ))
-              )}
-           </div>
+                  <div className="flex items-center gap-4">
+                    {w.audio_url && (<button onClick={() => playPreview(w.audio_url!)} className="text-[#38BDF8] hover:bg-white p-3 rounded-xl transition-all"><Volume2 className="w-6 h-6" /></button>)}
+                    <button onClick={() => handleDelete(w.id, w.audio_url)} className="text-slate-200 hover:text-error transition-colors p-3 rounded-xl"><Trash2 className="w-6 h-6" /></button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </div>
       </div>
     </main>

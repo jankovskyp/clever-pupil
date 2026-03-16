@@ -6,8 +6,9 @@ import { generateEnglishProblem, playAudio } from '../../lib/english-logic';
 import { DeskButton } from '../shared/DeskButton';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import Image from 'next/image';
-import { Trophy, Timer, RotateCcw, Play, CheckCircle2, XCircle, Home, ListOrdered, Save, Frown, Star, Loader2, Volume2, ArrowRight, Calendar, X, ChevronLeft, ChevronRight, Medal, HelpCircle } from 'lucide-react';
+import { Trophy, Timer, RotateCcw, Play, CheckCircle2, XCircle, Home, ListOrdered, Save, Frown, Star, Loader2, Volume2, ArrowRight, X, ChevronLeft, ChevronRight, Medal, HelpCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { usePlayer } from '@/context/PlayerContext';
 
 const LOCAL_STORAGE_KEY = 'english-leaderboard-local-v3';
 
@@ -59,7 +60,7 @@ export default function EnglishGameContainer() {
   const [feedback, setFeedback] = useState<'correct' | 'wrong' | null>(null);
   const [clickedOptions, setClickedOptions] = useState<Set<string>>(new Set());
   const [hasErrorInCurrent, setHasErrorInCurrent] = useState(false);
-  const [playerName, setPlayerName] = useState('');
+  const { player } = usePlayer();
   const [spellingInput, setSpellingInput] = useState('');
   const [leaderboard, setLeaderboard] = useState<EnglishLeaderboardEntry[]>([]);
   const [leaderboardTab, setLeaderboardTab] = useState<EnglishMode | 'all'>('all');
@@ -93,9 +94,24 @@ export default function EnglishGameContainer() {
       return;
     }
     try {
-      const { data } = await supabase.from('english_leaderboard').select('*').order('score', { ascending: false }).limit(100);
-      if (data) setLeaderboard(data as EnglishLeaderboardEntry[]);
-    } catch (err) {
+      const { data, error } = await supabase
+        .from('english_leaderboard')
+        .select(`
+          *,
+          players ( avatar )
+        `)
+        .order('score', { ascending: false })
+        .limit(100);
+
+      if (error) console.error(error);
+      if (data) {
+        const mapped = data.map((d: { players?: { avatar?: string } } & Record<string, unknown>) => ({
+          ...d,
+          avatar: d.players?.avatar
+        }));
+        setLeaderboard(mapped as EnglishLeaderboardEntry[]);
+      }
+    } catch {
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
       setLeaderboard(saved ? JSON.parse(saved) : []);
     } finally {
@@ -115,17 +131,17 @@ export default function EnglishGameContainer() {
   const filteredCount = getFilteredWords().length;
 
   const saveToLeaderboard = async () => {
-    if (!playerName.trim()) return;
     setIsLoading(true);
-    const entry: EnglishLeaderboardEntry = {
+    const entry: EnglishLeaderboardEntry & { player_id?: string } = {
       id: Math.random().toString(36).substring(2, 9),
-      name: playerName.trim().toUpperCase(),
+      name: player?.username || 'NEZNÁMÝ HRÁČ',
       score: liveScore,
       errors: stats.errors,
       total: stats.total,
       accuracy: Math.round((stats.correct / (stats.total || 1)) * 100),
       mode: selectedMode,
       date: new Date().toLocaleDateString('cs-CZ'),
+      player_id: player?.id
     };
     const localSaved = localStorage.getItem(LOCAL_STORAGE_KEY);
     const localList = localSaved ? JSON.parse(localSaved) : [];
@@ -139,16 +155,13 @@ export default function EnglishGameContainer() {
           total: entry.total,
           accuracy: entry.accuracy,
           mode: entry.mode,
-          date: entry.date
+          player_id: player?.id
         }]);
-        if (error) console.error('Supabase error:', error);
-      } catch (err) {
-        console.error('Insert catch error:', err);
-      }
+        if (error) console.error(error);
+      } catch (err: unknown) { console.error(err); }
     }
     setLeaderboardTab('all');
     setGameState('LEADERBOARD');
-    setPlayerName('');
     setIsLoading(false);
   };
 
@@ -235,7 +248,7 @@ export default function EnglishGameContainer() {
     } else if (timeLeft === 0 && gameState === 'PLAYING') {
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
       const localList = saved ? JSON.parse(saved) : [];
-      const bestScore = localList.length > 0 ? Math.max(...localList.map((e: any) => e.score)) : 0;
+      const bestScore = localList.length > 0 ? Math.max(...localList.map((e: EnglishLeaderboardEntry) => e.score)) : 0;
       if (liveScore > bestScore && liveScore > 0) {
         setShowNewRecord(true);
         setTimeout(() => { setShowNewRecord(false); setGameState('RESULTS'); }, 5000);
@@ -469,12 +482,12 @@ export default function EnglishGameContainer() {
             <div className="flex items-center gap-3"><Star className="w-6 h-6 text-[#38BDF8]" fill="currentColor" /><span className="text-5xl font-black text-white">{finalScore}</span></div>
           </div>
           {gameMode === 'competition' && (
-            <div className="flex flex-col gap-3 w-full mt-2 pt-4 border-t-2 border-slate-100 text-board-black text-board-black">
-              <input type="text" value={playerName} onChange={(e) => setPlayerName(e.target.value.slice(0, 12))} placeholder="TVOJE JMÉNO" className="w-full text-center text-3xl font-black uppercase py-4 rounded-2xl border-4 border-slate-100 focus:border-[#38BDF8] outline-none bg-white text-board-black placeholder:text-slate-200 transition-all" autoFocus />
-              <DeskButton size="lg" variant="secondary" onClick={saveToLeaderboard} disabled={!playerName.trim() || isLoading} className="py-4">
-                <div className="flex items-center justify-center gap-3 whitespace-nowrap text-white">
-                  {isLoading ? <Loader2 className="w-6 h-6 animate-spin text-white" /> : <Save className="w-6 h-6 text-white" />}
-                  <span className="text-xl font-bold uppercase text-white">ULOŽIT VÝSLEDEK</span>
+            <div className="flex flex-col gap-3 w-full mt-2 pt-4 border-t-2 border-slate-100 items-center">
+              <p className="text-xl font-bold text-slate-400">Hraješ jako <span className="text-[#38BDF8]">{player?.username}</span></p>
+              <DeskButton size="lg" variant="secondary" onClick={saveToLeaderboard} disabled={isLoading} className="py-4 w-full">
+                <div className="flex items-center justify-center gap-3 whitespace-nowrap">
+                  {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Save className="w-6 h-6" />}
+                  <span className="text-xl font-bold uppercase">{isLoading ? 'Ukládám...' : 'Uložit výsledek'}</span>
                 </div>
               </DeskButton>
             </div>
