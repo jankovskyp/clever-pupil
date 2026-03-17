@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { GameState, GameMode, Operation, NumberRange, Problem, GameStats, LeaderboardEntry } from '@/types/game';
 import { generateProblem } from '@/lib/math-logic';
 import { DeskButton } from '@/components/shared/DeskButton';
+import { SubjectHeader } from '@/components/shared/SubjectHeader';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { Trophy, Timer, RotateCcw, Play, CheckCircle2, XCircle, Home, ListOrdered, Save, Frown, Star, Loader2, Medal } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -209,13 +210,13 @@ export default function MathGameContainer() {
   if (gameState === 'HOME') {
     return (
       <div className="flex flex-col items-center justify-center h-full gap-6 p-6 bg-desk-white font-sans text-board-black relative">
-
+        <SubjectHeader subject="Matematika" subjectColor="#84cc16" />
         <div className="absolute top-6 left-6 flex items-center gap-6">
           <DeskButton variant="outline" size="md" onClick={() => router.push('/')} className="border-class-green border-4">
             <Home className="w-6 h-6 text-class-green" />
           </DeskButton>
         </div>
-        <div className="flex flex-col gap-4 w-full max-w-md">
+        <div className="flex flex-col gap-4 w-full max-w-md mt-24">
           <DeskButton size="xl" onClick={() => { setGameMode('training'); setGameState('SETUP'); }}><Play className="mr-4 w-12 h-12" fill="currentColor" strokeWidth={2.5} /> Trénink</DeskButton>
           <DeskButton size="xl" variant="secondary" onClick={() => { setGameMode('competition'); setGameState('SETUP'); }}><Trophy className="mr-4 w-12 h-12" fill="currentColor" strokeWidth={2.5} /> Soutěž</DeskButton>
           <DeskButton size="lg" variant="outline" className="border-slate-200" onClick={() => setGameState('LEADERBOARD')}><ListOrdered className="mr-4 w-8 h-8" /> Žebříček</DeskButton>
@@ -228,22 +229,13 @@ export default function MathGameContainer() {
     const filteredLeaderboard = leaderboardTab === 'all' ? leaderboard : leaderboard.filter(e => e.range === leaderboardTab);
     return (
       <div className="flex flex-col items-center h-full gap-4 p-4 relative bg-desk-white font-sans text-board-black">
-        <div className="absolute top-6 right-6 flex items-center gap-4">
-          <div className="flex flex-col items-end leading-none">
-            <h1 className="text-2xl sm:text-3xl font-black italic flex items-center gap-1">
-              <span>Chytrý</span>
-              <span>Školák</span>
-            </h1>
-            <span className="text-base sm:text-lg font-black text-class-green uppercase tracking-widest mt-1">Matematika</span>
-          </div>
-          <Image src="/icon.png" alt="Orel" width={64} height={64} className="w-14 h-14 sm:w-16 sm:h-16 mix-blend-multiply" />
-        </div>
+        <SubjectHeader subject="Matematika" subjectColor="#84cc16" />
         <div className="absolute top-6 left-6 flex items-center gap-6">
           <DeskButton variant="outline" size="md" onClick={() => setGameState('HOME')} className="border-class-green border-4">
             <Home className="w-6 h-6 text-class-green" />
           </DeskButton>
         </div>
-        <h2 className="text-5xl font-black mt-20 italic">Síň slávy</h2>
+        <h2 className="text-5xl font-black mt-28 italic">Síň slávy</h2>
         <div className="flex gap-3 p-1.5 bg-slate-100 rounded-[1.5rem]">
           <DeskButton size="md" variant={leaderboardTab === 'all' ? 'primary' : 'outline'} className="border-none shadow-none py-2 px-6" onClick={() => setLeaderboardTab('all')}>Všechno</DeskButton>
           {[10, 20, 100].map(r => (<DeskButton key={r} size="md" variant={leaderboardTab === r ? 'primary' : 'outline'} className="border-none shadow-none py-2 px-6" onClick={() => setLeaderboardTab(r as NumberRange)}>Do {r}</DeskButton>))}
@@ -289,16 +281,7 @@ export default function MathGameContainer() {
     const isCompetition = gameMode === 'competition';
     return (
       <div className="flex flex-col items-center justify-center h-full gap-8 p-6 relative font-sans text-board-black">
-        <div className="absolute top-6 right-6 flex items-center gap-4">
-          <div className="flex flex-col items-end leading-none">
-            <h1 className="text-2xl sm:text-3xl font-black italic flex items-center gap-1">
-              <span>Chytrý</span>
-              <span>Školák</span>
-            </h1>
-            <span className="text-base sm:text-lg font-black text-class-green uppercase tracking-widest mt-1">Matematika</span>
-          </div>
-          <Image src="/icon.png" alt="Orel" width={64} height={64} className="w-14 h-14 sm:w-16 sm:h-16 mix-blend-multiply" />
-        </div>
+        <SubjectHeader subject="Matematika" subjectColor="#84cc16" />
         <div className="absolute top-6 left-6 flex items-center gap-6 text-board-black">
           <DeskButton variant="outline" size="md" onClick={() => setGameState('HOME')} className="border-class-green border-4"><Home className="w-6 h-6 text-class-green" /></DeskButton>
         </div>

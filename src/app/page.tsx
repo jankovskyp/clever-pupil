@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { DeskButton } from '@/components/shared/DeskButton';
+import { SubjectHeader } from '@/components/shared/SubjectHeader';
 import { Calculator, BookA, Settings, Info } from 'lucide-react';
 import { usePlayer } from '@/context/PlayerContext';
 
@@ -22,7 +23,8 @@ export default function MainMenu() {
 
   return (
     <main className="h-screen w-screen bg-desk-white overflow-hidden flex flex-col items-center justify-center p-6 font-sans text-board-black relative">
-      <div className="flex flex-col gap-6 w-full max-w-md text-board-black mt-20">
+      <SubjectHeader />
+      <div className="flex flex-col gap-6 w-full max-w-md text-board-black mt-24">
         <DeskButton size="xl" onClick={() => router.push('/math')} className="bg-class-green shadow-[0_8px_0_0_rgba(163,230,53,0.3)] py-8">
           <Calculator className="mr-6 w-12 h-12 shrink-0" strokeWidth={2.5} />
           <span>Matematika</span>
