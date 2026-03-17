@@ -136,7 +136,7 @@ export default function RegisterScreen() {
     const deletePin = () => setPin(p => p.slice(0, -1));
 
     return (
-        <div className="h-screen w-screen bg-desk-white font-sans text-board-black p-6 flex items-center justify-center overflow-auto">
+        <div className="h-screen w-screen bg-desk-white font-sans text-board-black p-6 flex flex-col items-center justify-center overflow-auto">
             <div className="absolute top-6 left-6">
                 <DeskButton size="md" variant="outline" onClick={() => (step > 1 ? setStep(s => (s - 1) as 1 | 2 | 3 | 4) : router.back())}>
                     <ChevronLeft className="w-6 h-6 mr-2" /> Zpět
