@@ -5,13 +5,9 @@ import { DeskButton } from '@/components/shared/DeskButton';
 import { SubjectHeader } from '@/components/shared/SubjectHeader';
 import { AuthGuard } from '@/components/shared/AuthGuard';
 import { Calculator, BookA, Settings, Info } from 'lucide-react';
-import { usePlayer } from '@/context/PlayerContext';
 
 export default function MainMenu() {
   const router = useRouter();
-  const { player } = usePlayer();
-
-  if (!player) return null; // AuthGuard handles the loading/redirect
 
   return (
     <AuthGuard>

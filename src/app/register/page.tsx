@@ -143,6 +143,10 @@ export default function RegisterScreen() {
                 </DeskButton>
             </div>
 
+            <div className="flex items-center gap-4 mb-8">
+                <Image src="/icon.png" alt="Sova" width={64} height={64} className="w-14 h-14 mix-blend-multiply" priority />
+                <h1 className="text-4xl sm:text-5xl font-black italic">Chytrý Školák</h1>
+            </div>
             <div className="w-full max-w-2xl bg-white rounded-[2.5rem] p-8 sm:p-12 shadow-xl flex flex-col items-center">
 
                 {/* Step Indicator */}

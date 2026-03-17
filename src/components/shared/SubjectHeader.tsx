@@ -14,7 +14,7 @@ export function SubjectHeader({ subject, subjectColor = '#38BDF8' }: SubjectHead
     const router = useRouter();
 
     return (
-        <div className="absolute top-0 left-0 right-0 z-50 flex justify-between items-start px-6 pt-6 pointer-events-none">
+        <div className="absolute top-0 left-0 right-0 z-50 flex justify-between items-center px-6 pt-6 pointer-events-none">
             {/* Left spacer */}
             <div className="w-1/3" />
 
@@ -38,7 +38,7 @@ export function SubjectHeader({ subject, subjectColor = '#38BDF8' }: SubjectHead
 
             {/* Right: user badge */}
             {player && (
-                <div className="w-1/3 flex justify-end items-start pointer-events-auto">
+                <div className="w-1/3 flex justify-end items-center pointer-events-auto">
                     <div className="flex items-center gap-2 bg-white p-2 pr-3 rounded-full shadow-sm border-4 border-slate-100 hidden sm:flex">
                         <div className="w-9 h-9 sm:w-11 sm:h-11 relative">
                             <Image
