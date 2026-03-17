@@ -2,6 +2,7 @@
 import Image from 'next/image';
 import { LogOut } from 'lucide-react';
 import { usePlayer } from '@/context/PlayerContext';
+import { useRouter } from 'next/navigation';
 
 interface SubjectHeaderProps {
     subject?: string;
@@ -10,6 +11,7 @@ interface SubjectHeaderProps {
 
 export function SubjectHeader({ subject, subjectColor = '#38BDF8' }: SubjectHeaderProps) {
     const { player, setPlayer } = usePlayer();
+    const router = useRouter();
 
     return (
         <div className="absolute top-0 left-0 right-0 z-50 flex justify-between items-start px-6 pt-6 pointer-events-none">
@@ -48,7 +50,7 @@ export function SubjectHeader({ subject, subjectColor = '#38BDF8' }: SubjectHead
                         </div>
                         <span className="font-black text-base sm:text-lg leading-none">{player.username}</span>
                         <button
-                            onClick={() => setPlayer(null)}
+                            onClick={() => { setPlayer(null); router.push('/login'); }}
                             className="ml-1 p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
                             title="Odhlásit se"
                         >
