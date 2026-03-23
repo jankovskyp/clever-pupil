@@ -135,22 +135,28 @@ export default function EnglishGameContainer() {
 
   const filteredCount = getFilteredWords().length;
 
-  const saveToLeaderboard = async (scoreToSave: number, modeToSave: EnglishMode) => {
+  const saveToLeaderboard = async () => {
+    console.log('[ENG-SAVE] saveToLeaderboard called, liveScore=', liveScore, 'selectedMode=', selectedMode, 'player=', player?.username);
     setIsLoading(true);
     const entry: EnglishLeaderboardEntry & { player_id?: string } = {
       id: Math.random().toString(36).substring(2, 9),
       name: player?.username || 'NEZNÁMÝ HRÁČ',
-      score: scoreToSave,
+      score: liveScore,
       errors: stats.errors,
       total: stats.total,
       accuracy: Math.round((stats.correct / (stats.total || 1)) * 100),
-      mode: modeToSave,
+      mode: selectedMode,
       date: new Date().toLocaleDateString('cs-CZ'),
       player_id: player?.id
     };
+    console.log('[ENG-SAVE] entry=', JSON.stringify(entry));
+
     const localSaved = localStorage.getItem(LOCAL_STORAGE_KEY);
     const localList = localSaved ? JSON.parse(localSaved) : [];
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify([...localList, entry].sort((a, b) => b.score - a.score).slice(0, 100)));
+    const newList = [...localList, entry].sort((a, b) => b.score - a.score).slice(0, 100);
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newList));
+    console.log('[ENG-SAVE] saved to localStorage, total entries=', newList.length);
+
     if (isSupabaseConfigured && supabase) {
       try {
         const { error } = await supabase.from('english_leaderboard').insert([{
@@ -162,10 +168,15 @@ export default function EnglishGameContainer() {
           mode: entry.mode,
           player_id: player?.id
         }]);
-        if (error) console.error('Supabase english_leaderboard insert error:', error);
-      } catch (err: unknown) { console.error('Supabase insert exception:', err); }
+        if (error) console.error('[ENG-SAVE] Supabase insert error:', error);
+        else console.log('[ENG-SAVE] Supabase insert OK');
+      } catch (err: unknown) { console.error('[ENG-SAVE] Supabase exception:', err); }
+    } else {
+      console.log('[ENG-SAVE] Supabase not configured, skipping');
     }
+
     setIsLoading(false);
+    console.log('[ENG-SAVE] done');
   };
 
   // --- Game Logic ---
@@ -249,24 +260,26 @@ export default function EnglishGameContainer() {
     if (gameState === 'PLAYING' && gameMode === 'competition' && timeLeft > 0) {
       timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
     } else if (timeLeft === 0 && gameState === 'PLAYING') {
+      console.log('[ENG-TIMER] Timer hit 0! liveScore=', liveScore, 'selectedMode=', selectedMode, 'player=', player?.id);
       // Check personal best for this player + mode
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-      const localList: (EnglishLeaderboardEntry & { player_id?: string })[] = saved ? JSON.parse(saved) : [];
+      const localList: EnglishLeaderboardEntry[] = saved ? JSON.parse(saved) : [];
+      console.log('[ENG-TIMER] localStorage entries=', localList.length);
       const personalBest = localList
         .filter(e => e.player_id === player?.id && e.mode === selectedMode)
         .reduce((best, e) => Math.max(best, e.score), 0);
+      console.log('[ENG-TIMER] personalBest=', personalBest, 'isNewRecord=', liveScore > personalBest && liveScore > 0);
       const isNewRecord = liveScore > personalBest && liveScore > 0;
       if (isNewRecord) setShowNewRecord(true);
       // Only save when it's a new personal record
       if (isNewRecord) {
-        saveToLeaderboard(liveScore, selectedMode).then(() => {
-          setTimeout(() => {
-            setShowNewRecord(false);
-            setLeaderboardTab('all');
-            setGameState('LEADERBOARD');
-          }, 4000);
+        console.log('[ENG-TIMER] NEW RECORD! Calling saveToLeaderboard...');
+        saveToLeaderboard().then(() => {
+          console.log('[ENG-TIMER] saveToLeaderboard resolved, transitioning to RESULTS');
+          setTimeout(() => { setShowNewRecord(false); setGameState('RESULTS'); }, 5000);
         });
       } else {
+        console.log('[ENG-TIMER] No new record, going to RESULTS');
         setGameState('RESULTS');
       }
     }
