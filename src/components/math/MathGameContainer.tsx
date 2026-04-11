@@ -119,7 +119,7 @@ export default function MathGameContainer() {
     const activeOps: Operation[] = mode === 'competition' ? ['addition', 'subtraction', 'comparison', 'decomposition'] : operations;
     setGameState('PLAYING');
     setCurrentProblem(generateProblem(range, activeOps, {
-      withCarrying: mode === 'competition' ? true : withCarrying,
+      withCarrying,
       decompositionVariant: mode === 'competition' ? 'hard' : decompositionVariant,
     }));
     setFeedback(null);
@@ -133,7 +133,7 @@ export default function MathGameContainer() {
     setHasErrorInCurrent(false);
     const activeOps: Operation[] = gameMode === 'competition' ? ['addition', 'subtraction', 'comparison', 'decomposition'] : operations;
     setCurrentProblem(generateProblem(range, activeOps, {
-      withCarrying: gameMode === 'competition' ? true : withCarrying,
+      withCarrying,
       decompositionVariant: gameMode === 'competition' ? 'hard' : decompositionVariant,
     }));
   }, [range, operations, gameMode, withCarrying, decompositionVariant]);
@@ -323,8 +323,8 @@ export default function MathGameContainer() {
           <div className="flex gap-4">
             {[10, 20, 100].map(r => (<DeskButton key={r} size="lg" variant={range === r ? 'primary' : 'outline'} className="min-w-[120px]" onClick={() => setRange(r as NumberRange)}>Do {r}</DeskButton>))}
           </div>
-          {/* Carrying toggle lives here, under the range buttons — training only */}
-          {!isCompetition && range > 10 && (
+          {/* Carrying toggle lives here, under the range buttons */}
+          {range > 10 && (
             <div className="flex gap-3 mt-1">
               <DeskButton size="md" variant={withCarrying ? 'primary' : 'outline'} className="min-w-[150px] py-2 text-xl" onClick={() => setWithCarrying(true)}>S přechodem</DeskButton>
               <DeskButton size="md" variant={!withCarrying ? 'primary' : 'outline'} className="min-w-[150px] py-2 text-xl" onClick={() => setWithCarrying(false)}>Bez přechodu</DeskButton>
