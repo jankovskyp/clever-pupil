@@ -34,7 +34,7 @@ export const generateProblem = (
       a = getRandomInt(0, range);
       b = getRandomInt(0, range - a);
       attempts++;
-    } while (!withCarrying && range > 10 && (a % 10) + (b % 10) >= 10 && attempts < 100);
+    } while (!withCarrying && range > 10 && (a % 10) + (b % 10) > 10 && attempts < 100);
     result = a + b;
     displayOperator = '+';
   } else if (type === 'subtraction') {
@@ -64,7 +64,7 @@ export const generateProblem = (
       splitA = getRandomInt(1, n - 1);
       splitB = n - splitA;
       attempts++;
-    } while (!withCarrying && range > 10 && (splitA % 10) + (splitB % 10) >= 10 && attempts < 100);
+    } while (!withCarrying && range > 10 && (splitA % 10) + (splitB % 10) > 10 && attempts < 100);
 
     displayOperator = '=';
 
