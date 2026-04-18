@@ -227,9 +227,9 @@ export default function MathGameContainer() {
           </DeskButton>
         </div>
         <div className="flex flex-col gap-4 w-full max-w-md mt-24">
-          <DeskButton size="xl" onClick={() => { setGameMode('training'); setGameState('SETUP'); }}><Play className="mr-4 w-12 h-12" fill="currentColor" strokeWidth={2.5} /> Trénink</DeskButton>
-          <DeskButton size="xl" variant="secondary" onClick={() => { setGameMode('competition'); setGameState('SETUP'); }}><Trophy className="mr-4 w-12 h-12" fill="currentColor" strokeWidth={2.5} /> Soutěž</DeskButton>
-          <DeskButton size="lg" variant="outline" className="border-slate-200" onClick={() => setGameState('LEADERBOARD')}><ListOrdered className="mr-4 w-8 h-8" /> Žebříček</DeskButton>
+          <DeskButton size="lg" onClick={() => { setGameMode('training'); setGameState('SETUP'); }} className="w-full py-7"><Play className="mr-4 w-9 h-9" fill="currentColor" strokeWidth={2.5} /> Trénink</DeskButton>
+          <DeskButton size="lg" variant="secondary" onClick={() => { setGameMode('competition'); setGameState('SETUP'); }} className="w-full py-7"><Trophy className="mr-4 w-9 h-9" fill="currentColor" strokeWidth={2.5} /> Soutěž</DeskButton>
+          <DeskButton size="lg" variant="outline" className="w-full border-slate-200 py-5" onClick={() => setGameState('LEADERBOARD')}><ListOrdered className="mr-4 w-7 h-7" /> Žebříček</DeskButton>
         </div>
       </div>
     );
@@ -310,12 +310,12 @@ export default function MathGameContainer() {
   if (gameState === 'SETUP') {
     const isCompetition = gameMode === 'competition';
     return (
-      <div className="flex flex-col items-center justify-center h-full gap-6 p-6 relative font-sans text-board-black">
+      <div className="flex flex-col items-center justify-start h-full gap-4 p-6 pt-28 overflow-y-auto relative font-sans text-board-black">
         <SubjectHeader subject="Matematika" />
         <div className="absolute top-6 left-6 flex items-center gap-6 text-board-black">
           <DeskButton variant="outline" size="md" onClick={() => setGameState('HOME')} className="border-class-green border-2"><Home className="w-6 h-6 text-class-green" /></DeskButton>
         </div>
-        <h2 className="text-6xl font-black italic">{isCompetition ? 'Soutěž' : 'Trénink'}</h2>
+        <h2 className="text-5xl font-black italic">{isCompetition ? 'Soutěž' : 'Trénink'}</h2>
 
         {/* Range selector — always shown */}
         <div className="flex flex-col gap-3 items-center">
@@ -391,7 +391,7 @@ export default function MathGameContainer() {
           )}
         </div>
         <div className="flex-1 flex flex-col items-center justify-center gap-8">
-          <div className="h-40 flex items-center justify-center text-[9rem] font-black tracking-tight leading-none gap-8 text-board-black">
+          <div className="h-40 flex items-center justify-center font-black tracking-tight leading-none gap-3 sm:gap-6 text-board-black" style={{ fontSize: 'clamp(3rem, 16vw, 9rem)' }}>
             {isComparison ? (
               <>
                 <span>{currentProblem.a}</span>

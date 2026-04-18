@@ -340,14 +340,14 @@ export default function EnglishGameContainer() {
           </DeskButton>
         </div>
         <div className="flex flex-col gap-4 w-full max-w-md mt-24">
-          <DeskButton size="xl" onClick={() => { setGameMode('training'); setGameState('SETUP'); }}>
-            <Play className="mr-4 w-12 h-12" fill="currentColor" strokeWidth={2.5} /> Trénink
+          <DeskButton size="lg" onClick={() => { setGameMode('training'); setGameState('SETUP'); }} className="w-full py-7">
+            <Play className="mr-4 w-9 h-9" fill="currentColor" strokeWidth={2.5} /> Trénink
           </DeskButton>
-          <DeskButton size="xl" variant="secondary" onClick={() => { setGameMode('competition'); setGameState('SETUP'); }}>
-            <Trophy className="mr-4 w-12 h-12" fill="currentColor" strokeWidth={2.5} /> Soutěž
+          <DeskButton size="lg" variant="secondary" onClick={() => { setGameMode('competition'); setGameState('SETUP'); }} className="w-full py-7">
+            <Trophy className="mr-4 w-9 h-9" fill="currentColor" strokeWidth={2.5} /> Soutěž
           </DeskButton>
-          <DeskButton size="lg" variant="outline" className="border-slate-200" onClick={() => setGameState('LEADERBOARD')}>
-            <ListOrdered className="mr-4 w-8 h-8" /> Žebříček
+          <DeskButton size="lg" variant="outline" className="w-full border-slate-200 py-5" onClick={() => setGameState('LEADERBOARD')}>
+            <ListOrdered className="mr-4 w-7 h-7" /> Žebříček
           </DeskButton>
         </div>
       </div>
@@ -459,14 +459,14 @@ export default function EnglishGameContainer() {
   if (gameState === 'SETUP') {
     const isCompetition = gameMode === 'competition';
     return (
-      <div className="flex flex-col items-center justify-center h-full gap-6 p-6 relative font-sans text-board-black">
+      <div className="flex flex-col items-center justify-start h-full gap-4 p-6 pt-28 overflow-y-auto relative font-sans text-board-black">
         <SubjectHeader subject="Angličtina" />
         <div className="absolute top-6 left-6">
           <DeskButton variant="outline" size="md" onClick={() => setGameState('HOME')} className="border-class-green border-2">
             <Home className="w-6 h-6 text-class-green" />
           </DeskButton>
         </div>
-        <h2 className="text-6xl font-black italic mt-20">{isCompetition ? 'Soutěž' : 'Trénink'}</h2>
+        <h2 className="text-5xl font-black italic">{isCompetition ? 'Soutěž' : 'Trénink'}</h2>
 
         <div className="flex flex-col gap-3 items-center w-full max-w-xl bg-white p-6 rounded-[2.5rem] border-2 border-slate-100">
           <p className="text-xl font-black uppercase tracking-widest text-slate-300">Která slovíčka?</p>
@@ -592,10 +592,18 @@ export default function EnglishGameContainer() {
         </div>
 
         {/* ── Question text ────────────────────────────────────────────── */}
-        <div className="flex-1 flex flex-col items-center justify-center min-h-0">
-          <div className="text-5xl md:text-8xl font-black tracking-tight text-center text-board-black drop-shadow-sm px-4 leading-tight">
-            {currentProblem.questionText}
-          </div>
+        <div className="flex-1 flex flex-col items-center justify-center min-h-0 overflow-hidden">
+          {currentProblem.questionText === '?' ? (
+            /* Listen / spelling: big dimmed ? as visual placeholder */
+            <div className="flex flex-col items-center gap-3 select-none">
+              <Volume2 className="w-16 h-16 text-board-black opacity-10" strokeWidth={1.5} />
+              <span className="text-[7rem] font-black leading-none text-board-black opacity-10">?</span>
+            </div>
+          ) : (
+            <div className="font-black tracking-tight text-center text-board-black drop-shadow-sm px-4 leading-tight" style={{ fontSize: 'clamp(2.5rem, 14vw, 7rem)' }}>
+              {currentProblem.questionText}
+            </div>
+          )}
         </div>
 
         {/* ── Answer area ──────────────────────────────────────────────── */}
