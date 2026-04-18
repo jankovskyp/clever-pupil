@@ -364,29 +364,33 @@ export default function MathGameContainer() {
     const isHardDecomp = isDecomposition && currentProblem.decompositionVariant === 'hard';
     const displayOptions = isComparison ? ['<', '=', '>'] : currentProblem.options;
     return (
-      <div className="flex flex-col h-full relative p-4 font-sans text-board-black">
-        <div className="flex justify-between items-center mb-4 text-board-black">
-          <div className="flex gap-3 items-center">
+      <div className="flex flex-col h-full p-4 font-sans text-board-black">
+        {/* Topbar: 3-part flex — no absolute positioning */}
+        <div className="flex items-center mb-4 gap-2">
+          {/* Left: home + stat badges */}
+          <div className="flex gap-2 items-center shrink-0">
             <DeskButton variant="outline" size="md" onClick={() => setGameState('HOME')} className="border-class-green border-2"><Home className="w-6 h-6 text-class-green" /></DeskButton>
             <div className="flex gap-2">
-              <div className="bg-white rounded-xl px-5 py-2 shadow-sm border-2 border-slate-50 flex items-center gap-2"><CheckCircle2 className="text-success w-6 h-6" /><span className="text-3xl font-black text-success leading-none">{stats.correct}</span></div>
-              {stats.errors > 0 && (<div className="bg-white rounded-xl px-5 py-2 shadow-sm border-2 border-slate-50 flex items-center gap-2"><XCircle className="text-error w-6 h-6" /><span className="text-3xl font-black text-error leading-none">{stats.errors}</span></div>)}
+              <div className="bg-white rounded-xl px-4 py-2 shadow-sm border-2 border-slate-50 flex items-center gap-2"><CheckCircle2 className="text-success w-5 h-5" /><span className="text-2xl font-black text-success leading-none">{stats.correct}</span></div>
+              {stats.errors > 0 && (<div className="bg-white rounded-xl px-4 py-2 shadow-sm border-2 border-slate-50 flex items-center gap-2"><XCircle className="text-error w-5 h-5" /><span className="text-2xl font-black text-error leading-none">{stats.errors}</span></div>)}
             </div>
           </div>
 
-          {gameMode === 'competition' && (
-            <div className="absolute left-1/2 -translate-x-1/2 top-6 flex flex-col items-center">
-              <div className={`bg-board-black text-white px-8 py-3 rounded-2xl flex items-center gap-4 transition-transform duration-300 ${scorePop ? 'scale-125' : 'scale-100'}`}>
-                <Star className="w-8 h-8 text-class-green" fill="currentColor" />
-                <span className="text-5xl font-black">{liveScore}</span>
+          {/* Center: score pill (competition) or spacer */}
+          <div className="flex-1 flex justify-center">
+            {gameMode === 'competition' && (
+              <div className={`bg-board-black text-white px-6 py-2 rounded-2xl flex items-center gap-3 transition-transform duration-300 ${scorePop ? 'scale-125' : 'scale-100'}`}>
+                <Star className="w-6 h-6 text-class-green" fill="currentColor" />
+                <span className="text-4xl font-black">{liveScore}</span>
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
+          {/* Right: timer (competition only) */}
           {gameMode === 'competition' && (
-            <div className="flex flex-col items-end gap-1 w-1/4">
-              <div className="flex items-center gap-2 text-board-black"><Timer className="w-6 h-6" /><span className="text-3xl font-mono font-black">{timeLeft}s</span></div>
-              <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden border-2 border-white shadow-inner"><div className="h-full bg-carpet-green transition-all duration-1000 ease-linear" style={{ width: `${(timeLeft / 60) * 100}%` }} /></div>
+            <div className="flex flex-col items-end gap-1 shrink-0 min-w-[80px]">
+              <div className="flex items-center gap-1.5"><Timer className="w-5 h-5" /><span className="text-2xl font-mono font-black">{timeLeft}s</span></div>
+              <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden border border-white shadow-inner"><div className="h-full bg-carpet-green transition-all duration-1000 ease-linear" style={{ width: `${(timeLeft / 60) * 100}%` }} /></div>
             </div>
           )}
         </div>

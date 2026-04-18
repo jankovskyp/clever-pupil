@@ -534,9 +534,10 @@ export default function EnglishGameContainer() {
     return (
       <div className="flex flex-col h-full relative p-4 font-sans text-board-black">
 
-        {/* ── Topbar ─────────────────────────────────────────────────────── */}
-        <div className="flex justify-between items-center mb-4 flex-shrink-0">
-          <div className="flex gap-2 items-center">
+        {/* ── Topbar: 3-part flex — no absolute positioning ────────────── */}
+        <div className="flex items-center mb-4 flex-shrink-0 gap-2">
+          {/* Left: home + stat badges */}
+          <div className="flex gap-2 items-center shrink-0">
             <DeskButton variant="outline" size="md" onClick={() => setGameState('HOME')} className="border-class-green border-2">
               <Home className="w-6 h-6 text-class-green" />
             </DeskButton>
@@ -552,53 +553,57 @@ export default function EnglishGameContainer() {
                 </div>
               )}
             </div>
-            {/* Sound button — always visible here so it stays above the keyboard */}
-            {currentProblem.audioUrl && (
-              <button
-                type="button"
-                onClick={() => playAudio(currentProblem.audioUrl!)}
-                className="w-12 h-12 flex items-center justify-center bg-class-green/10 hover:bg-class-green/20 rounded-xl border-2 border-class-green/30 text-class-green transition-all active:scale-[0.97]"
-              >
-                <Volume2 className="w-5 h-5" />
-              </button>
-            )}
           </div>
 
-          {/* Competition: score pill */}
-          {gameMode === 'competition' && (
-            <div className="absolute left-1/2 -translate-x-1/2 top-5 flex flex-col items-center">
+          {/* Center: score pill (competition) or spacer */}
+          <div className="flex-1 flex justify-center">
+            {gameMode === 'competition' && (
               <div className={`bg-board-black text-white px-6 py-2 rounded-2xl flex items-center gap-3 transition-transform duration-300 ${scorePop ? 'scale-125' : 'scale-100'}`}>
                 <Star className="w-6 h-6 text-class-green" fill="currentColor" />
                 <span className="text-4xl font-black">{liveScore}</span>
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
-          {/* Competition: timer */}
-          {gameMode === 'competition' && (
-            <div className="flex flex-col items-end gap-1 w-1/4">
-              <div className="flex items-center gap-1.5">
-                <Timer className="w-5 h-5" />
-                <span className="text-2xl font-mono font-black">{timeLeft}s</span>
+          {/* Right: sound button (spelling) + timer (competition) */}
+          <div className="flex flex-col items-end gap-1.5 shrink-0">
+            {isSpelling && currentProblem.audioUrl && (
+              <button
+                type="button"
+                onClick={() => playAudio(currentProblem.audioUrl!)}
+                className="w-16 h-16 flex items-center justify-center bg-class-green text-white rounded-2xl shadow-[0_4px_16px_rgba(124,58,237,0.35)] hover:shadow-[0_6px_24px_rgba(124,58,237,0.45)] active:scale-[0.97] transition-all"
+              >
+                <Volume2 className="w-8 h-8" />
+              </button>
+            )}
+            {gameMode === 'competition' && (
+              <div className="flex flex-col items-end gap-1 min-w-[76px]">
+                <div className="flex items-center gap-1.5">
+                  <Timer className="w-5 h-5" />
+                  <span className="text-2xl font-mono font-black">{timeLeft}s</span>
+                </div>
+                <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden border border-white shadow-inner">
+                  <div
+                    className="h-full bg-class-green transition-all duration-1000 ease-linear"
+                    style={{ width: `${(timeLeft / 60) * 100}%` }}
+                  />
+                </div>
               </div>
-              <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden border border-white shadow-inner">
-                <div
-                  className="h-full bg-class-green transition-all duration-1000 ease-linear"
-                  style={{ width: `${(timeLeft / 60) * 100}%` }}
-                />
-              </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
-        {/* ── Question text ────────────────────────────────────────────── */}
+        {/* ── Question / listen area ───────────────────────────────────── */}
         <div className="flex-1 flex flex-col items-center justify-center min-h-0 overflow-hidden">
           {currentProblem.questionText === '?' ? (
-            /* Listen / spelling: big dimmed ? as visual placeholder */
-            <div className="flex flex-col items-center gap-3 select-none">
-              <Volume2 className="w-16 h-16 text-board-black opacity-10" strokeWidth={1.5} />
-              <span className="text-[7rem] font-black leading-none text-board-black opacity-10">?</span>
-            </div>
+            /* Listen mode: big tappable sound button */
+            <button
+              type="button"
+              onClick={() => currentProblem.audioUrl && playAudio(currentProblem.audioUrl)}
+              className="w-44 h-44 rounded-full bg-class-green text-white flex items-center justify-center shadow-[0_8px_32px_rgba(124,58,237,0.4)] hover:shadow-[0_12px_48px_rgba(124,58,237,0.5)] active:scale-[0.95] transition-all"
+            >
+              <Volume2 className="w-24 h-24" strokeWidth={1.5} />
+            </button>
           ) : (
             <div className="font-black tracking-tight text-center text-board-black drop-shadow-sm px-4 leading-tight" style={{ fontSize: 'clamp(2.5rem, 14vw, 7rem)' }}>
               {currentProblem.questionText}
