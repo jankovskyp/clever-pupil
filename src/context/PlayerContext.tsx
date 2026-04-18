@@ -3,16 +3,16 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export type AvatarType =
-    | 'avatar_fox'
+    | 'avatar_lion'
+    | 'avatar_elephant'
     | 'avatar_bear'
-    | 'avatar_cat'
-    | 'avatar_dog'
+    | 'avatar_fox'
+    | 'avatar_owl'
     | 'avatar_bunny'
-    | 'avatar_tiger'
-    | 'avatar_giraffe'
-    | 'avatar_crocodile'
     | 'avatar_monkey'
-    | 'avatar_dolphin';
+    | 'avatar_panda'
+    | 'avatar_cat'
+    | 'avatar_dog';
 
 export interface Player {
     id: string;

@@ -9,16 +9,16 @@ import { ChevronLeft, ArrowRight, UserPlus } from 'lucide-react';
 import Image from 'next/image';
 
 const AVATARS: { id: AvatarType; label: string }[] = [
-    { id: 'avatar_fox', label: 'Liška' },
-    { id: 'avatar_bear', label: 'Medvěd' },
-    { id: 'avatar_cat', label: 'Kočka' },
-    { id: 'avatar_dog', label: 'Pejsek' },
-    { id: 'avatar_bunny', label: 'Zajíček' },
-    { id: 'avatar_tiger', label: 'Tygr' },
-    { id: 'avatar_giraffe', label: 'Žirafa' },
-    { id: 'avatar_crocodile', label: 'Krokodýl' },
-    { id: 'avatar_monkey', label: 'Opice' },
-    { id: 'avatar_dolphin', label: 'Delfín' },
+    { id: 'avatar_lion',     label: 'Lev' },
+    { id: 'avatar_elephant', label: 'Slon' },
+    { id: 'avatar_bear',     label: 'Medvěd' },
+    { id: 'avatar_fox',      label: 'Liška' },
+    { id: 'avatar_owl',      label: 'Sova' },
+    { id: 'avatar_bunny',    label: 'Zajíček' },
+    { id: 'avatar_monkey',   label: 'Opice' },
+    { id: 'avatar_panda',    label: 'Panda' },
+    { id: 'avatar_cat',      label: 'Kočka' },
+    { id: 'avatar_dog',      label: 'Pejsek' },
 ];
 
 const RECOVERY_QUESTIONS = [
