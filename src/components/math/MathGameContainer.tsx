@@ -209,10 +209,10 @@ export default function MathGameContainer() {
 
   if (showNewRecord) {
     return (
-      <div className="h-full w-full flex flex-col items-center justify-center bg-class-green text-board-black font-sans p-10 animate-in fade-in duration-500">
-        <Trophy className="w-64 h-64 mb-8 animate-bounce" fill="currentColor" />
-        <h1 className="text-9xl font-black italic mb-4">NOVÝ REKORD!</h1>
-        <p className="text-6xl font-bold uppercase tracking-widest">{liveScore} BODŮ</p>
+      <div className="h-full w-full flex flex-col items-center justify-center bg-class-green text-white font-sans p-8 animate-in fade-in duration-500">
+        <Trophy className="w-40 h-40 mb-6 animate-bounce" fill="currentColor" />
+        <h1 className="text-4xl font-black italic mb-3 text-center">NOVÝ REKORD!</h1>
+        <p className="text-3xl font-bold uppercase tracking-widest text-center">{liveScore} BODŮ</p>
       </div>
     );
   }
@@ -276,28 +276,32 @@ export default function MathGameContainer() {
           ) : filteredLeaderboard.length === 0 ? (
             <p className="text-center text-2xl text-slate-300 py-16">Zatím žádné výsledky</p>
           ) : (
-            <div className="flex flex-col gap-2 overflow-y-auto h-full pr-2 text-board-black">
-              <div className="flex text-slate-400 font-bold px-4 mb-1 uppercase text-[10px] tracking-[0.2em]">
-                <span className="w-12 text-center">#</span><span className="flex-1">Jméno</span><span className="w-20 text-center">Úspěch</span><span className="w-16 text-center">Ano</span><span className="w-16 text-center">Ne</span><span className="w-24 text-center font-black">Body</span>
+            <div className="flex flex-col gap-2 overflow-y-auto h-full pr-1 text-board-black">
+              <div className="flex text-slate-400 font-bold px-3 mb-1 uppercase text-[10px] tracking-[0.15em]">
+                <span className="w-10 text-center shrink-0">#</span>
+                <span className="flex-1 ml-2">Jméno</span>
+                <span className="w-16 text-center shrink-0">Úspěch</span>
+                <span className="w-14 text-center font-black shrink-0">Body</span>
               </div>
               {filteredLeaderboard.map((entry, i) => (
                 <div key={entry.id} className="flex items-center p-3 bg-slate-50 rounded-xl text-board-black">
-                  <span className="w-12 flex justify-center">
-                    {i === 0 ? <Medal className="w-8 h-8 text-yellow-400" fill="currentColor" /> :
-                      i === 1 ? <Medal className="w-8 h-8 text-slate-300" fill="currentColor" /> :
-                        i === 2 ? <Medal className="w-8 h-8 text-amber-600" fill="currentColor" /> :
-                          <span className="text-2xl font-black text-slate-300 italic">#{i + 1}</span>}
+                  <span className="w-10 flex justify-center shrink-0">
+                    {i === 0 ? <Medal className="w-7 h-7 text-yellow-400" fill="currentColor" /> :
+                     i === 1 ? <Medal className="w-7 h-7 text-slate-300" fill="currentColor" /> :
+                     i === 2 ? <Medal className="w-7 h-7 text-amber-600" fill="currentColor" /> :
+                               <span className="text-lg font-black text-slate-300 italic">#{i + 1}</span>}
                   </span>
-                  <div className="flex-1 ml-3 flex items-center gap-3">
+                  <div className="flex-1 ml-2 min-w-0 flex items-center gap-2">
                     {entry.avatar && (
-                      <Image src={`/avatars/${entry.avatar}.png`} alt="avatar" width={32} height={32} className="w-8 h-8 drop-shadow-sm mix-blend-multiply" />
+                      <Image src={`/avatars/${entry.avatar}.png`} alt="avatar" width={28} height={28} className="w-7 h-7 drop-shadow-sm mix-blend-multiply shrink-0" />
                     )}
-                    <p className="text-xl font-black leading-tight uppercase">{entry.name} <span className="text-[10px] text-slate-300 font-normal">({entry.range})</span></p>
+                    <div className="min-w-0">
+                      <p className="text-sm font-black leading-tight uppercase truncate">{entry.name}</p>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase">Do {entry.range}</p>
+                    </div>
                   </div>
-                  <div className="w-20 text-center text-xl font-black text-carpet-green bg-class-green/20 py-1 rounded-lg">{entry.accuracy}%</div>
-                  <div className="w-16 text-center text-xl font-black text-success/70">{entry.total - entry.errors}</div>
-                  <div className="w-16 text-center text-xl font-black text-error/40">{entry.errors}</div>
-                  <div className="w-24 text-center text-2xl font-black">{entry.score}</div>
+                  <div className="w-16 text-center text-sm font-black text-carpet-green bg-class-green/20 py-1 rounded-lg shrink-0">{entry.accuracy}%</div>
+                  <div className="w-14 text-center text-base font-black shrink-0">{entry.score}</div>
                 </div>
               ))}
             </div>

@@ -109,9 +109,18 @@ export function SpellingKeyboard({
 
       {/* ── HW keyboard banner OR on-screen QWERTY ─────────────────────── */}
       {hwKeyboardActive ? (
-        <div className="flex items-center gap-2 bg-class-green/10 border border-class-green/20 rounded-2xl px-5 py-3 text-class-green font-bold">
-          <span className="text-lg">⌨️</span>
-          <span className="text-sm sm:text-base">Klávesnice detekována — piš přímo</span>
+        <div className="flex flex-col items-center gap-2">
+          <div className="flex items-center gap-2 bg-class-green/10 border border-class-green/20 rounded-2xl px-4 py-2 text-class-green font-bold">
+            <span className="text-base">⌨️</span>
+            <span className="text-sm">Klávesnice detekována — piš přímo</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setHwKeyboardActive(false)}
+            className="text-slate-400 text-xs font-bold underline underline-offset-2 hover:text-slate-600 transition-colors"
+          >
+            Zobrazit klávesnici
+          </button>
         </div>
       ) : (
         <div className="flex flex-col gap-1 sm:gap-1.5 items-center w-full">
