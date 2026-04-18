@@ -130,15 +130,15 @@ export default function RegisterScreen() {
                             <h2 className="text-4xl font-black italic text-center">Jak se jmenuješ?</h2>
                             <input
                                 type="text"
-                                className="w-full text-center text-3xl font-black p-5 rounded-3xl border-4 border-slate-200 outline-none focus:border-class-green transition-colors bg-slate-50"
+                                className="w-full text-center text-xl font-black p-4 rounded-2xl border-4 border-slate-200 outline-none focus:border-class-green transition-colors bg-slate-50"
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value.replace(/[^\p{L}\p{N}]/gu, ''))}
                                 placeholder="Tvé jméno"
                                 autoFocus
                                 onKeyDown={(e) => e.key === 'Enter' && handleNextStep()}
                             />
-                            <DeskButton size="xl" variant="info" onClick={handleNextStep} disabled={isLoading} className="w-full">
-                                Pokračovat <ArrowRight className="ml-2 w-8 h-8" />
+                            <DeskButton size="md" variant="info" onClick={handleNextStep} disabled={isLoading} className="w-full py-4 text-lg">
+                                Pokračovat <ArrowRight className="ml-2 w-5 h-5" />
                             </DeskButton>
                         </div>
                     )}
@@ -159,8 +159,8 @@ export default function RegisterScreen() {
                                     </button>
                                 ))}
                             </div>
-                            <DeskButton size="xl" variant="info" onClick={handleNextStep} className="w-full">
-                                Pokračovat <ArrowRight className="ml-2 w-8 h-8" />
+                            <DeskButton size="md" variant="info" onClick={handleNextStep} className="w-full py-4 text-lg">
+                                Pokračovat <ArrowRight className="ml-2 w-5 h-5" />
                             </DeskButton>
                         </div>
                     )}
@@ -195,8 +195,8 @@ export default function RegisterScreen() {
                                 </button>
                             </div>
                             {pin.length === 4 && (
-                                <DeskButton size="xl" variant="info" onClick={handleNextStep} className="w-full animate-in fade-in duration-200">
-                                    Pokračovat <ArrowRight className="ml-2 w-8 h-8" />
+                                <DeskButton size="md" variant="info" onClick={handleNextStep} className="w-full py-4 text-lg animate-in fade-in duration-200">
+                                    Pokračovat <ArrowRight className="ml-2 w-5 h-5" />
                                 </DeskButton>
                             )}
                         </div>
@@ -216,15 +216,15 @@ export default function RegisterScreen() {
                             </select>
                             <input
                                 type="text"
-                                className="w-full text-center text-2xl font-black p-4 rounded-3xl border-4 border-slate-200 outline-none focus:border-class-green transition-colors bg-slate-50"
+                                className="w-full text-center text-xl font-black p-4 rounded-2xl border-4 border-slate-200 outline-none focus:border-class-green transition-colors bg-slate-50"
                                 value={answer}
                                 onChange={(e) => setAnswer(e.target.value)}
                                 placeholder="Tvoje odpověď"
                                 onKeyDown={(e) => e.key === 'Enter' && handleNextStep()}
                                 autoFocus
                             />
-                            <DeskButton size="xl" variant="primary" onClick={handleNextStep} disabled={isLoading} className="w-full">
-                                {isLoading ? 'Ukládám...' : 'Vytvořit účet!'} <UserPlus className="ml-3 w-8 h-8" />
+                            <DeskButton size="md" variant="primary" onClick={handleNextStep} disabled={isLoading} className="w-full py-4 text-lg">
+                                {isLoading ? 'Ukládám...' : 'Vytvořit účet!'} <UserPlus className="ml-3 w-5 h-5" />
                             </DeskButton>
                         </div>
                     )}

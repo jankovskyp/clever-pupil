@@ -4,8 +4,9 @@ import { useState } from 'react';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { DeskButton } from '@/components/shared/DeskButton';
 import { AppHeader } from '@/components/shared/AppHeader';
-import { Plus, Trash2, Loader2, Calendar, Volume2, RefreshCw, AlertCircle, Lock } from 'lucide-react';
+import { Plus, Trash2, Loader2, Calendar, Volume2, RefreshCw, AlertCircle, Lock, ChevronLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { addVocabularyWord, adminRegenerateAll } from '../actions/vocabulary';
 import { VocabularyWord } from '@/types/english';
 import { AuthGuard } from '@/components/shared/AuthGuard';
@@ -91,33 +92,50 @@ export default function SettingsPage() {
   if (!isAuthorized) {
     return (
       <AuthGuard>
-        <main className="h-screen w-screen bg-slate-100 flex flex-col font-sans text-board-black">
-          <AppHeader page="Slovníček" onBack={() => router.push('/')} />
-          <div className="flex-1 flex items-center justify-center p-6">
-          <form onSubmit={handleAuth} className="w-full max-w-md bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-slate-50 flex flex-col items-center gap-8 animate-in zoom-in duration-300">
-            <div className="bg-slate-100 p-8 rounded-full">
-              <Lock className={`w-16 h-16 ${authError ? 'text-error animate-shake' : 'text-slate-400'}`} />
+        <main className="h-screen w-screen bg-desk-white flex items-center justify-center lg:bg-[#ece9fc] lg:p-8 font-sans text-board-black">
+          <div className="w-full h-full lg:w-[480px] lg:rounded-[2.5rem] lg:shadow-2xl bg-white flex flex-col overflow-hidden">
+
+            {/* Header */}
+            <div className="flex items-center gap-2 px-4 pt-4 pb-2 shrink-0">
+              <button
+                onClick={() => router.push('/')}
+                className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-board-black transition-colors"
+                aria-label="Zpět"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <Image src="/icon.png" alt="Chytrý Školák" width={32} height={32} className="w-8 h-8 mix-blend-multiply" priority />
+              <span className="text-lg font-black italic">Chytrý Školák</span>
             </div>
 
-            <div className="text-center">
-              <h1 className="text-4xl font-black italic mb-2">Vstup povolen jen pro dospělé</h1>
-              <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Zadej tajný kód</p>
+            {/* Content */}
+            <div className="flex-1 flex flex-col items-center justify-center p-6 overflow-y-auto">
+              <form onSubmit={handleAuth} className="w-full flex flex-col items-center gap-5 animate-in fade-in zoom-in duration-300">
+                <div className="bg-slate-100 p-6 rounded-full">
+                  <Lock className={`w-12 h-12 ${authError ? 'text-error animate-shake' : 'text-slate-400'}`} />
+                </div>
+
+                <div className="text-center">
+                  <h1 className="text-2xl font-black italic mb-1">Vstup povolen jen pro dospělé</h1>
+                  <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Zadej tajný kód</p>
+                </div>
+
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className={`w-full text-center text-3xl font-black py-4 rounded-2xl border-4 outline-none bg-slate-50 transition-all ${authError ? 'border-error text-error' : 'border-slate-200 focus:border-slate-400'}`}
+                  placeholder="••••"
+                  autoFocus
+                  inputMode="numeric"
+                />
+
+                <DeskButton size="md" type="submit" className="w-full py-4 text-lg bg-slate-800 text-white shadow-slate-200">
+                  Odemknout <ArrowRightIcon className="ml-3 w-5 h-5" />
+                </DeskButton>
+              </form>
             </div>
 
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className={`w-full text-center text-6xl font-black py-6 rounded-3xl border-8 outline-none bg-slate-50 transition-all ${authError ? 'border-error text-error' : 'border-slate-100 focus:border-slate-400'}`}
-              placeholder="****"
-              autoFocus
-              inputMode="numeric"
-            />
-
-            <DeskButton size="xl" type="submit" className="w-full bg-slate-800 text-white shadow-slate-200">
-              Odemknout <ArrowRightIcon className="ml-4 w-10 h-10" />
-            </DeskButton>
-          </form>
           </div>
         </main>
       </AuthGuard>

@@ -132,22 +132,22 @@ export default function LoginScreen() {
                             <form onSubmit={handleUsernameSubmit} className="w-full flex flex-col gap-4">
                                 <input
                                     type="text"
-                                    className="w-full text-center text-3xl font-black p-5 rounded-3xl border-4 border-slate-200 outline-none focus:border-class-green transition-colors text-board-black bg-slate-50"
+                                    className="w-full text-center text-xl font-black p-4 rounded-2xl border-4 border-slate-200 outline-none focus:border-class-green transition-colors text-board-black bg-slate-50"
                                     value={usernameInput}
                                     onChange={(e) => setUsernameInput(e.target.value)}
                                     placeholder="Tvé jméno"
                                     autoFocus
                                 />
-                                <DeskButton size="lg" variant="info" type="submit" disabled={isLoading} className="w-full py-5">
-                                    {isLoading ? 'Hledám...' : 'Přihlásit se'} <ArrowRight className="ml-2 w-7 h-7" />
+                                <DeskButton size="md" variant="info" type="submit" disabled={isLoading} className="w-full py-4 text-lg">
+                                    {isLoading ? 'Hledám...' : 'Přihlásit se'} <ArrowRight className="ml-2 w-5 h-5" />
                                 </DeskButton>
                             </form>
                             <div className="flex gap-3 w-full">
-                                <DeskButton size="md" variant="outline" onClick={() => router.push('/register')} className="flex-1 bg-white border-slate-200">
-                                    <UserPlus className="mr-2 w-5 h-5 text-slate-500" /> Přidat hráče
+                                <DeskButton size="md" variant="outline" onClick={() => router.push('/register')} className="flex-1 text-base border-slate-200">
+                                    <UserPlus className="mr-2 w-4 h-4 text-slate-500" /> Přidat hráče
                                 </DeskButton>
-                                <DeskButton size="md" variant="outline" onClick={() => router.push('/about')} className="flex-1 bg-white border-slate-200">
-                                    <Info className="mr-2 w-5 h-5 text-slate-500" /> O aplikaci
+                                <DeskButton size="md" variant="outline" onClick={() => router.push('/about')} className="flex-1 text-base border-slate-200">
+                                    <Info className="mr-2 w-4 h-4 text-slate-500" /> O aplikaci
                                 </DeskButton>
                             </div>
                         </div>
@@ -205,8 +205,8 @@ export default function LoginScreen() {
                                         placeholder="Tvoje odpověď"
                                         autoFocus
                                     />
-                                    <DeskButton size="lg" variant="info" onClick={handleRecoveryAnswerSubmit} className="w-full">
-                                        Ověřit odpověď <ArrowRight className="ml-2 w-6 h-6" />
+                                    <DeskButton size="md" variant="info" onClick={handleRecoveryAnswerSubmit} className="w-full py-4 text-lg">
+                                        Ověřit odpověď <ArrowRight className="ml-2 w-5 h-5" />
                                     </DeskButton>
                                     <button onClick={() => { setRecoveryStep(0); setError(''); }}
                                         className="text-slate-400 font-bold hover:text-slate-600 underline underline-offset-4">
@@ -228,8 +228,8 @@ export default function LoginScreen() {
                                         inputMode="numeric"
                                         autoFocus
                                     />
-                                    <DeskButton size="lg" variant="primary" onClick={handleNewPinSubmit} className="w-full">
-                                        Uložit a přihlásit se <LogIn className="ml-2 w-6 h-6" />
+                                    <DeskButton size="md" variant="primary" onClick={handleNewPinSubmit} className="w-full py-4 text-lg">
+                                        Uložit a přihlásit se <LogIn className="ml-2 w-5 h-5" />
                                     </DeskButton>
                                     <button onClick={() => { setRecoveryStep(0); setError(''); }}
                                         className="text-slate-400 font-bold hover:text-slate-600 underline underline-offset-4">
