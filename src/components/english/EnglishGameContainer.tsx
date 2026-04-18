@@ -599,9 +599,9 @@ export default function EnglishGameContainer() {
         </div>
 
         {/* ── Answer area ──────────────────────────────────────────────── */}
-        <div className="flex-shrink-0 pb-2">
+        <div className="flex-shrink-0 pb-2 w-full">
           {isSpelling ? (
-            <div className="flex flex-col items-center gap-3">
+            <div className="flex flex-col items-center gap-3 w-full">
               <SpellingKeyboard
                 value={spellingInput}
                 onChange={setSpellingInput}

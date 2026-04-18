@@ -122,11 +122,10 @@ export function SpellingKeyboard({
           </button>
         </div>
       ) : (
-        /* Keys scale to fill available width up to max-w-2xl */
         <div className="flex flex-col gap-1.5 items-center w-full px-2">
 
           {ROWS.map((row, ri) => (
-            <div key={ri} className="flex gap-1 sm:gap-1.5 w-full max-w-2xl">
+            <div key={ri} className="flex gap-1 sm:gap-1.5 w-full">
               {row.map(letter => (
                 <button
                   key={letter}
@@ -142,7 +141,7 @@ export function SpellingKeyboard({
           ))}
 
           {/* Delete + Submit row */}
-          <div className="flex gap-2 mt-1 w-full max-w-2xl">
+          <div className="flex gap-2 mt-1 w-full">
             <button
               type="button"
               onClick={removeLetter}
