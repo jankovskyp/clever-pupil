@@ -96,8 +96,8 @@ export default function RegisterScreen() {
     const deletePin = () => setPin(p => p.slice(0, -1));
 
     return (
-        <main className="h-screen w-screen bg-desk-white flex items-center justify-center lg:bg-[#ece9fc] lg:p-8 font-sans text-board-black">
-            <div className="w-full h-full lg:w-[480px] lg:rounded-[2.5rem] lg:shadow-2xl bg-white flex flex-col overflow-hidden">
+        <main className="h-screen w-screen bg-white flex flex-col font-sans text-board-black">
+            <div className="w-full h-full flex flex-col overflow-hidden">
 
                 {/* Header */}
                 <div className="flex items-center gap-2 px-4 pt-4 pb-2 shrink-0">
