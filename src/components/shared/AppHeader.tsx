@@ -59,18 +59,24 @@ export function AppHeader({ subject, page, onBack, showLogout = false }: AppHead
 
       {/* Right: player avatar + logout (home only) */}
       {showLogout && player && (
-        <div className="flex items-center gap-1.5 bg-slate-50 border-2 border-slate-100 rounded-xl pl-1.5 pr-1.5 py-1 shrink-0">
-          <div className="w-7 h-7 relative shrink-0">
-            <Image
-              src={`/avatars/${player.avatar}.png`}
-              alt={player.username}
-              fill
-              className="object-contain mix-blend-multiply"
-            />
-          </div>
-          <span className="text-xs font-black leading-none max-w-[60px] truncate">
-            {player.username}
-          </span>
+        <div className="flex items-center gap-1.5 bg-slate-50 border-2 border-slate-100 rounded-xl pl-1.5 pr-1 py-1 shrink-0">
+          <button
+            onClick={() => router.push('/profile')}
+            className="flex items-center gap-1.5 hover:opacity-75 transition-opacity"
+            title="Upravit profil"
+          >
+            <div className="w-7 h-7 relative shrink-0">
+              <Image
+                src={`/avatars/${player.avatar}.png`}
+                alt={player.username}
+                fill
+                className="object-contain mix-blend-multiply"
+              />
+            </div>
+            <span className="text-xs font-black leading-none max-w-[60px] truncate">
+              {player.username}
+            </span>
+          </button>
           <button
             onClick={() => { setPlayer(null); router.push('/login'); }}
             className="p-1 text-slate-300 hover:text-error hover:bg-red-50 rounded-lg transition-colors"
