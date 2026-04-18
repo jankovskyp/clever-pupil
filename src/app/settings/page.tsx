@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { DeskButton } from '@/components/shared/DeskButton';
-import { Home, Plus, Trash2, Loader2, Calendar, Volume2, RefreshCw, AlertCircle, Lock } from 'lucide-react';
+import { AppHeader } from '@/components/shared/AppHeader';
+import { Plus, Trash2, Loader2, Calendar, Volume2, RefreshCw, AlertCircle, Lock } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { addVocabularyWord, adminRegenerateAll } from '../actions/vocabulary';
 import { VocabularyWord } from '@/types/english';
@@ -90,13 +91,9 @@ export default function SettingsPage() {
   if (!isAuthorized) {
     return (
       <AuthGuard>
-        <main className="h-screen w-screen bg-slate-100 flex items-center justify-center p-6 font-sans text-board-black">
-          <div className="absolute top-6 left-6">
-            <DeskButton variant="outline" size="md" onClick={() => router.push('/')} className="border-slate-400">
-              <Home className="w-8 h-8 text-slate-600" />
-            </DeskButton>
-          </div>
-
+        <main className="h-screen w-screen bg-slate-100 flex flex-col font-sans text-board-black">
+          <AppHeader page="Slovníček" onBack={() => router.push('/')} />
+          <div className="flex-1 flex items-center justify-center p-6">
           <form onSubmit={handleAuth} className="w-full max-w-md bg-white p-12 rounded-[4rem] shadow-2xl border-8 border-slate-50 flex flex-col items-center gap-8 animate-in zoom-in duration-300">
             <div className="bg-slate-100 p-8 rounded-full">
               <Lock className={`w-16 h-16 ${authError ? 'text-error animate-shake' : 'text-slate-400'}`} />
@@ -121,6 +118,7 @@ export default function SettingsPage() {
               Odemknout <ArrowRightIcon className="ml-4 w-10 h-10" />
             </DeskButton>
           </form>
+          </div>
         </main>
       </AuthGuard>
     );
@@ -129,21 +127,15 @@ export default function SettingsPage() {
   // Admin Screen (Authorized)
   return (
     <AuthGuard>
-      <main className="h-screen w-screen bg-slate-50 flex flex-col p-6 pt-6 font-sans text-slate-900 overflow-hidden text-board-black">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-6">
-            <DeskButton variant="outline" size="md" onClick={() => router.push('/')} className="border-slate-400 text-board-black">
-              <Home className="w-8 h-8 text-slate-600" />
-            </DeskButton>
-            <h1 className="text-6xl font-black italic text-slate-800">Slovníček (Admin)</h1>
-          </div>
-          <div className="flex gap-4">
-            <DeskButton variant="outline" size="md" onClick={handleRegenerate} disabled={isAdminWorking} className="border-slate-300 text-slate-400 py-3">
-              {isAdminWorking ? <Loader2 className="w-6 h-6 animate-spin mr-3" /> : <RefreshCw className="w-6 h-6 mr-3" />}
-              Regenerovat vše
-            </DeskButton>
-          </div>
+      <main className="h-screen w-screen bg-slate-50 flex flex-col font-sans text-slate-900 overflow-hidden text-board-black">
+        <div className="flex items-center gap-2 pr-4">
+          <AppHeader page="Slovníček (Admin)" onBack={() => router.push('/')} />
+          <DeskButton variant="outline" size="md" onClick={handleRegenerate} disabled={isAdminWorking} className="border-slate-300 text-slate-400 py-3 shrink-0">
+            {isAdminWorking ? <Loader2 className="w-6 h-6 animate-spin mr-3" /> : <RefreshCw className="w-6 h-6 mr-3" />}
+            Regenerovat vše
+          </DeskButton>
         </div>
+        <div className="px-6 pb-6 flex flex-col flex-1 min-h-0">
 
         <div className="flex gap-8 flex-1 min-h-0 text-board-black">
           <div className="w-[400px] bg-white p-8 rounded-[3rem] shadow-xl border-4 border-slate-100 flex flex-col gap-6 shrink-0">
@@ -200,6 +192,7 @@ export default function SettingsPage() {
               )}
             </div>
           </div>
+        </div>
         </div>
       </main>
     </AuthGuard>

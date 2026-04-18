@@ -5,7 +5,7 @@ import { EnglishGameState, EnglishMode, EnglishProblem, EnglishStats, EnglishLea
 import { generateEnglishProblem, playAudio } from '../../lib/english-logic';
 import { DeskButton } from '../shared/DeskButton';
 import { SpellingKeyboard } from '../shared/SpellingKeyboard';
-import { SubjectHeader } from '../shared/SubjectHeader';
+import { AppHeader } from '../shared/AppHeader';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import Image from 'next/image';
 import {
@@ -347,14 +347,9 @@ export default function EnglishGameContainer() {
   // ── HOME ──────────────────────────────────────────────────────────────────
   if (gameState === 'HOME') {
     return (
-      <div className="flex flex-col items-center justify-center h-full gap-6 p-6 font-sans relative text-board-black bg-desk-white">
-        <SubjectHeader subject="Angličtina" />
-        <div className="absolute top-6 left-6">
-          <DeskButton variant="outline" size="md" onClick={() => router.push('/')} className="border-class-green border-2">
-            <Home className="w-6 h-6 text-class-green" />
-          </DeskButton>
-        </div>
-        <div className="flex flex-col gap-4 w-full max-w-md mt-24">
+      <div className="flex flex-col h-full bg-desk-white font-sans text-board-black">
+        <AppHeader subject="Angličtina" onBack={() => router.push('/')} />
+        <div className="flex-1 flex flex-col items-center justify-center gap-4 px-6 pb-6">
           <DeskButton size="lg" onClick={() => { setGameMode('training'); setGameState('SETUP'); }} className="w-full py-7">
             <Play className="mr-4 w-9 h-9" fill="currentColor" strokeWidth={2.5} /> Trénink
           </DeskButton>
@@ -395,15 +390,10 @@ export default function EnglishGameContainer() {
         : deduped(leaderboard.filter(e => e.mode === leaderboardTab));
 
     return (
-      <div className="flex flex-col items-center h-full gap-4 p-4 relative font-sans text-board-black bg-desk-white">
-        <SubjectHeader subject="Angličtina" />
-        <div className="absolute top-6 left-6">
-          <DeskButton variant="outline" size="md" onClick={() => setGameState('HOME')} className="border-class-green border-2">
-            <Home className="w-6 h-6 text-class-green" />
-          </DeskButton>
-        </div>
+      <div className="flex flex-col h-full bg-desk-white font-sans text-board-black">
+        <AppHeader subject="Angličtina" page="Žebříček" onBack={() => setGameState('HOME')} />
 
-        <div className="flex gap-2 p-1.5 bg-slate-100 rounded-[1.5rem] justify-center mt-24">
+        <div className="flex gap-2 p-1.5 bg-slate-100 rounded-[1.5rem] mx-4">
           <DeskButton size="md" variant={leaderboardTab === 'all' ? 'primary' : 'outline'} className="border-none shadow-none py-2 px-4 whitespace-nowrap" onClick={() => setLeaderboardTab('all')}>
             Všechno
           </DeskButton>
@@ -417,7 +407,7 @@ export default function EnglishGameContainer() {
           })}
         </div>
 
-        <div className="w-full max-w-4xl bg-white rounded-[2.5rem] p-6 shadow-xl overflow-hidden flex-1 mb-2 flex flex-col">
+        <div className="bg-white rounded-[2rem] p-4 mx-4 mt-3 mb-4 shadow-xl overflow-hidden flex-1 flex flex-col">
           {isLoading ? (
             <div className="flex-1 flex flex-col items-center justify-center gap-4">
               <Loader2 className="w-12 h-12 animate-spin text-slate-200" />
@@ -470,70 +460,75 @@ export default function EnglishGameContainer() {
   if (gameState === 'SETUP') {
     const isCompetition = gameMode === 'competition';
     return (
-      <div className="flex flex-col items-center justify-start h-full gap-4 p-6 pt-28 overflow-y-auto relative font-sans text-board-black">
-        <SubjectHeader subject="Angličtina" />
-        <div className="absolute top-6 left-6">
-          <DeskButton variant="outline" size="md" onClick={() => setGameState('HOME')} className="border-class-green border-2">
-            <Home className="w-6 h-6 text-class-green" />
-          </DeskButton>
-        </div>
-        <h2 className="text-5xl font-black italic">{isCompetition ? 'Soutěž' : 'Trénink'}</h2>
+      <div className="flex flex-col h-full font-sans text-board-black">
+        <AppHeader subject="Angličtina" page={isCompetition ? 'Soutěž' : 'Trénink'} onBack={() => setGameState('HOME')} />
+        <div className="flex-1 flex flex-col items-center justify-start gap-3 p-4 overflow-y-auto">
 
-        <div className="flex flex-col gap-3 items-center w-full max-w-xl bg-white p-6 rounded-[2.5rem] border-2 border-slate-100">
-          <p className="text-xl font-black uppercase tracking-widest text-slate-300">Která slovíčka?</p>
-          <div className="flex gap-4 w-full">
-            <DeskButton size="md" variant={selectionMode === 'all' ? 'primary' : 'outline'} className="flex-1 py-4" onClick={() => setSelectionMode('all')}>
-              Všechna
-            </DeskButton>
-            <DeskButton
-              size="md"
-              variant={selectionMode === 'date' ? 'primary' : 'outline'}
-              className="flex-1 py-4"
-              onClick={() => { setSelectionMode('date'); setIsDatePickerOpen(true); }}
-            >
-              {fromDate ? new Date(fromDate).toLocaleDateString('cs-CZ') : 'Jen od data'}
-            </DeskButton>
-          </div>
-          <div className="text-center">
-            <span className="text-lg font-black text-slate-400">
+          {/* Word selection */}
+          <div className="flex flex-col gap-2 items-center w-full bg-white p-4 rounded-[2rem] border-2 border-slate-100">
+            <p className="text-xs font-black uppercase tracking-widest text-slate-300">Která slovíčka?</p>
+            <div className="flex gap-2 w-full items-center">
+              <DeskButton size="md" variant={selectionMode === 'all' ? 'primary' : 'outline'} className="flex-1 py-2 text-base" onClick={() => setSelectionMode('all')}>
+                Všechna
+              </DeskButton>
+              <DeskButton
+                size="md"
+                variant={selectionMode === 'date' ? 'primary' : 'outline'}
+                className="flex-1 py-2 text-base"
+                onClick={() => { setSelectionMode('date'); setIsDatePickerOpen(true); }}
+              >
+                {fromDate ? new Date(fromDate).toLocaleDateString('cs-CZ') : 'Jen od data'}
+              </DeskButton>
+              {selectionMode === 'date' && fromDate && (
+                <button
+                  onClick={() => { setFromDate(''); setSelectionMode('all'); }}
+                  className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:text-error hover:bg-red-50 transition-colors shrink-0"
+                  title="Zrušit filtr"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              )}
+            </div>
+            <span className="text-sm font-black text-slate-400">
               Ve výběru:{' '}
               <span className={filteredCount < 1 ? 'text-error' : 'text-class-green'}>{filteredCount}</span>{' '}
               slovíček
             </span>
           </div>
-        </div>
 
-        <div className="flex flex-col gap-4 items-center">
-          <p className="text-xl font-black text-slate-300 uppercase tracking-widest">Vyber jeden režim</p>
-          <div className="grid grid-cols-2 gap-4 w-full max-w-xl">
-            {(['listen', 'spelling'] as EnglishMode[]).map(op => {
-              const labels = { listen: 'Poslech', spelling: 'Psaní (Spelling)' };
-              return (
-                <DeskButton
-                  key={op}
-                  size="md"
-                  variant={selectedMode === op ? 'primary' : 'outline'}
-                  className="py-5"
-                  onClick={() => setSelectedMode(op)}
-                >
-                  {labels[op]}
-                </DeskButton>
-              );
-            })}
+          {/* Mode selection */}
+          <div className="flex flex-col gap-2 items-center w-full">
+            <p className="text-xs font-black text-slate-300 uppercase tracking-widest">Vyber jeden režim</p>
+            <div className="flex gap-2 w-full">
+              {(['listen', 'spelling'] as EnglishMode[]).map(op => {
+                const labels = { listen: 'Poslech', spelling: 'Psaní' };
+                return (
+                  <DeskButton
+                    key={op}
+                    size="md"
+                    variant={selectedMode === op ? 'primary' : 'outline'}
+                    className="flex-1 py-2 text-base"
+                    onClick={() => setSelectedMode(op)}
+                  >
+                    {labels[op]}
+                  </DeskButton>
+                );
+              })}
+            </div>
           </div>
+
+          <DeskButton size="lg" variant="secondary" className="mt-1 px-12 py-4" onClick={() => startNewGame(gameMode)}>
+            START!
+          </DeskButton>
+
+          {isDatePickerOpen && (
+            <CustomDatePicker
+              initialDate={fromDate}
+              onSelect={date => { setFromDate(date); setIsDatePickerOpen(false); }}
+              onClose={() => setIsDatePickerOpen(false)}
+            />
+          )}
         </div>
-
-        <DeskButton size="xl" variant="secondary" className="mt-4 px-20 py-6" onClick={() => startNewGame(gameMode)}>
-          START!
-        </DeskButton>
-
-        {isDatePickerOpen && (
-          <CustomDatePicker
-            initialDate={fromDate}
-            onSelect={date => { setFromDate(date); setIsDatePickerOpen(false); }}
-            onClose={() => setIsDatePickerOpen(false)}
-          />
-        )}
       </div>
     );
   }
@@ -657,7 +652,9 @@ export default function EnglishGameContainer() {
     const isSad   = stats.errors > stats.correct;
     const accuracy = Math.round((stats.correct / (stats.total || 1)) * 100);
     return (
-      <div className="flex flex-col items-center justify-center h-full gap-4 p-4 font-sans overflow-y-auto text-board-black">
+      <div className="flex flex-col h-full font-sans text-board-black">
+        <AppHeader subject="Angličtina" page="Výsledky" onBack={() => setGameState('HOME')} />
+        <div className="flex-1 flex flex-col items-center justify-center gap-4 p-4 overflow-y-auto">
         <div className="flex flex-col items-center">
           {isSad
             ? <Frown className="w-20 h-20 text-error mb-2 animate-bounce" />
@@ -693,6 +690,7 @@ export default function EnglishGameContainer() {
         <DeskButton size="md" variant="outline" className="border-slate-200 shadow-none py-3" onClick={() => setGameState('HOME')}>
           <RotateCcw className="mr-2 w-5 h-5" /> Zkusit znovu
         </DeskButton>
+        </div>
       </div>
     );
   }

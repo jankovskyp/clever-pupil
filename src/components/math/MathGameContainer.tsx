@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { GameState, GameMode, Operation, NumberRange, Problem, GameStats, LeaderboardEntry, DecompositionVariant } from '@/types/game';
 import { generateProblem } from '@/lib/math-logic';
 import { DeskButton } from '@/components/shared/DeskButton';
-import { SubjectHeader } from '@/components/shared/SubjectHeader';
+import { AppHeader } from '@/components/shared/AppHeader';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { Trophy, Timer, RotateCcw, Play, CheckCircle2, XCircle, Home, ListOrdered, Frown, Star, Loader2, Medal } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -219,14 +219,9 @@ export default function MathGameContainer() {
 
   if (gameState === 'HOME') {
     return (
-      <div className="flex flex-col items-center justify-center h-full gap-6 p-6 bg-desk-white font-sans text-board-black relative">
-        <SubjectHeader subject="Matematika" />
-        <div className="absolute top-6 left-6 flex items-center gap-6">
-          <DeskButton variant="outline" size="md" onClick={() => router.push('/')} className="border-class-green border-2">
-            <Home className="w-6 h-6 text-class-green" />
-          </DeskButton>
-        </div>
-        <div className="flex flex-col gap-4 w-full max-w-md mt-24">
+      <div className="flex flex-col h-full bg-desk-white font-sans text-board-black">
+        <AppHeader subject="Matematika" onBack={() => router.push('/')} />
+        <div className="flex-1 flex flex-col items-center justify-center gap-4 px-6 pb-6">
           <DeskButton size="lg" onClick={() => { setGameMode('training'); setGameState('SETUP'); }} className="w-full py-7"><Play className="mr-4 w-9 h-9" fill="currentColor" strokeWidth={2.5} /> Trénink</DeskButton>
           <DeskButton size="lg" variant="secondary" onClick={() => { setGameMode('competition'); setGameState('SETUP'); }} className="w-full py-7"><Trophy className="mr-4 w-9 h-9" fill="currentColor" strokeWidth={2.5} /> Soutěž</DeskButton>
           <DeskButton size="lg" variant="outline" className="w-full border-slate-200 py-5" onClick={() => setGameState('LEADERBOARD')}><ListOrdered className="mr-4 w-7 h-7" /> Žebříček</DeskButton>
@@ -259,18 +254,13 @@ export default function MathGameContainer() {
       ? bestPerPlayer(leaderboard)
       : deduped(leaderboard.filter(e => e.range === leaderboardTab));
     return (
-      <div className="flex flex-col items-center h-full gap-4 p-4 relative bg-desk-white font-sans text-board-black">
-        <SubjectHeader subject="Matematika" />
-        <div className="absolute top-6 left-6 flex items-center gap-6">
-          <DeskButton variant="outline" size="md" onClick={() => setGameState('HOME')} className="border-class-green border-2">
-            <Home className="w-6 h-6 text-class-green" />
-          </DeskButton>
+      <div className="flex flex-col h-full bg-desk-white font-sans text-board-black">
+        <AppHeader subject="Matematika" page="Žebříček" onBack={() => setGameState('HOME')} />
+        <div className="flex gap-2 p-1.5 bg-slate-100 rounded-[1.5rem] mx-4">
+          <DeskButton size="md" variant={leaderboardTab === 'all' ? 'primary' : 'outline'} className="border-none shadow-none py-2 px-4" onClick={() => setLeaderboardTab('all')}>Všechno</DeskButton>
+          {[10, 20, 100].map(r => (<DeskButton key={r} size="md" variant={leaderboardTab === r ? 'primary' : 'outline'} className="border-none shadow-none py-2 px-4" onClick={() => setLeaderboardTab(r as NumberRange)}>Do {r}</DeskButton>))}
         </div>
-        <div className="flex gap-3 p-1.5 bg-slate-100 rounded-[1.5rem] mt-24">
-          <DeskButton size="md" variant={leaderboardTab === 'all' ? 'primary' : 'outline'} className="border-none shadow-none py-2 px-6" onClick={() => setLeaderboardTab('all')}>Všechno</DeskButton>
-          {[10, 20, 100].map(r => (<DeskButton key={r} size="md" variant={leaderboardTab === r ? 'primary' : 'outline'} className="border-none shadow-none py-2 px-6" onClick={() => setLeaderboardTab(r as NumberRange)}>Do {r}</DeskButton>))}
-        </div>
-        <div className="w-full max-w-4xl bg-white rounded-[2.5rem] p-6 shadow-xl overflow-hidden flex-1 mb-2 flex flex-col text-board-black">
+        <div className="bg-white rounded-[2rem] p-4 mx-4 mt-3 mb-4 shadow-xl overflow-hidden flex-1 flex flex-col text-board-black">
           {isLoading ? (
             <div className="flex-1 flex flex-col items-center justify-center gap-4"><Loader2 className="w-12 h-12 animate-spin text-slate-200" /><p className="text-xl text-slate-300 font-bold">Načítám...</p></div>
           ) : filteredLeaderboard.length === 0 ? (
@@ -314,12 +304,9 @@ export default function MathGameContainer() {
   if (gameState === 'SETUP') {
     const isCompetition = gameMode === 'competition';
     return (
-      <div className="flex flex-col items-center justify-start h-full gap-3 p-4 pt-20 overflow-y-auto relative font-sans text-board-black">
-        <SubjectHeader subject="Matematika" />
-        <div className="absolute top-6 left-6 flex items-center gap-6 text-board-black">
-          <DeskButton variant="outline" size="md" onClick={() => setGameState('HOME')} className="border-class-green border-2"><Home className="w-6 h-6 text-class-green" /></DeskButton>
-        </div>
-        <h2 className="text-2xl font-black italic">{isCompetition ? 'Soutěž' : 'Trénink'}</h2>
+      <div className="flex flex-col h-full font-sans text-board-black">
+        <AppHeader subject="Matematika" page={isCompetition ? 'Soutěž' : 'Trénink'} onBack={() => setGameState('HOME')} />
+        <div className="flex-1 flex flex-col items-center justify-start gap-3 p-4 overflow-y-auto">
 
         {/* Range selector */}
         <div className="flex flex-col gap-2 items-center">
@@ -356,6 +343,7 @@ export default function MathGameContainer() {
         )}
 
         <DeskButton size="lg" variant="secondary" className="mt-1 px-12 py-4" onClick={() => startNewGame(gameMode)}>START!</DeskButton>
+        </div>
       </div>
     );
   }
@@ -458,7 +446,9 @@ export default function MathGameContainer() {
     const finalScore = liveScore;
 
     return (
-      <div className="flex flex-col items-center justify-center h-full gap-4 p-4 font-sans overflow-y-auto text-board-black">
+      <div className="flex flex-col h-full font-sans text-board-black">
+        <AppHeader subject="Matematika" page="Výsledky" onBack={() => setGameState('HOME')} />
+        <div className="flex-1 flex flex-col items-center justify-center gap-4 p-4 overflow-y-auto">
         <div className="flex flex-col items-center">
           {isSad ? (<Frown className="w-20 h-20 text-error mb-2 animate-bounce" />) : (<Trophy className="w-20 h-20 text-class-green mb-2 animate-bounce" />)}
           <h2 className="text-5xl font-black italic">{isSad ? 'Zkus to znovu!' : 'Super výkon!'}</h2>
@@ -479,6 +469,7 @@ export default function MathGameContainer() {
           )}
         </div>
         <DeskButton size="md" variant="outline" className="border-slate-200 shadow-none py-3" onClick={() => setGameState('HOME')}><RotateCcw className="mr-2 w-5 h-5" /> Zkusit znovu</DeskButton>
+        </div>
       </div>
     );
   }
