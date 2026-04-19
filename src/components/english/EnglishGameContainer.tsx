@@ -393,7 +393,7 @@ export default function EnglishGameContainer() {
       <div className="flex flex-col h-full bg-desk-white font-sans text-board-black">
         <AppHeader subject="Angličtina" page="Žebříček" onBack={() => setGameState('HOME')} />
 
-        <div className="flex gap-2 p-1.5 bg-slate-100 rounded-[1.5rem] mx-4">
+        <div className="flex gap-2 p-1.5 bg-slate-100 rounded-[1.5rem] mx-4 overflow-x-auto scrollbar-none">
           <DeskButton size="md" variant={leaderboardTab === 'all' ? 'primary' : 'outline'} className="border-none shadow-none py-2 px-4 whitespace-nowrap" onClick={() => setLeaderboardTab('all')}>
             Všechno
           </DeskButton>
