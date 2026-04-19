@@ -4,12 +4,13 @@ import { useState } from 'react';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { DeskButton } from '@/components/shared/DeskButton';
 import { AppHeader } from '@/components/shared/AppHeader';
-import { Plus, Trash2, Loader2, Calendar, Volume2, RefreshCw, AlertCircle, Lock, ChevronLeft, ImageIcon } from 'lucide-react';
+import { Plus, Trash2, Loader2, Calendar, Volume2, RefreshCw, AlertCircle, Lock, ChevronLeft, ImageIcon, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { addVocabularyWord, adminRegenerateAll, regenerateWordImage } from '../actions/vocabulary';
 import { VocabularyWord } from '@/types/english';
 import { AuthGuard } from '@/components/shared/AuthGuard';
+import { ArrowRight as ArrowRightIcon } from 'lucide-react';
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -19,6 +20,12 @@ export default function SettingsPage() {
   const [isAdminWorking, setIsAdminWorking] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [regeneratingImageId, setRegeneratingImageId] = useState<string | null>(null);
+
+  // Lightbox
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
+
+  // Regen dialog
+  const [regenDialog, setRegenDialog] = useState<{ id: string; word: string; hint: string } | null>(null);
 
   // Auth state
   const [password, setPassword] = useState('');
@@ -70,9 +77,10 @@ export default function SettingsPage() {
     }
   };
 
-  const handleRegenerateImage = async (id: string) => {
+  const handleRegenerateImage = async (id: string, hint?: string) => {
+    setRegenDialog(null);
     setRegeneratingImageId(id);
-    const result = await regenerateWordImage(id);
+    const result = await regenerateWordImage(id, hint);
     setRegeneratingImageId(null);
     if (result.success) {
       fetchWords();
@@ -106,8 +114,6 @@ export default function SettingsPage() {
       <AuthGuard>
         <main className="h-screen w-screen bg-white flex flex-col font-sans text-board-black">
           <div className="w-full h-full flex flex-col overflow-hidden">
-
-            {/* Header */}
             <div className="flex items-center gap-2 px-4 pt-4 pb-2 shrink-0">
               <button
                 onClick={() => router.push('/')}
@@ -119,19 +125,15 @@ export default function SettingsPage() {
               <Image src="/icon.png" alt="Chytrý Školák" width={32} height={32} className="w-8 h-8 mix-blend-multiply" priority />
               <span className="text-lg font-black italic">Chytrý Školák</span>
             </div>
-
-            {/* Content */}
             <div className="flex-1 flex flex-col items-center justify-center p-6 overflow-y-auto">
               <form onSubmit={handleAuth} className="w-full flex flex-col items-center gap-5 animate-in fade-in zoom-in duration-300">
                 <div className="bg-slate-100 p-6 rounded-full">
                   <Lock className={`w-12 h-12 ${authError ? 'text-error animate-shake' : 'text-slate-400'}`} />
                 </div>
-
                 <div className="text-center">
                   <h1 className="text-2xl font-black italic mb-1">Vstup povolen jen pro dospělé</h1>
                   <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Zadej tajný kód</p>
                 </div>
-
                 <input
                   type="password"
                   value={password}
@@ -141,13 +143,11 @@ export default function SettingsPage() {
                   autoFocus
                   inputMode="numeric"
                 />
-
                 <DeskButton size="md" type="submit" className="w-full py-4 text-lg bg-slate-800 text-white shadow-slate-200">
                   Odemknout <ArrowRightIcon className="ml-3 w-5 h-5" />
                 </DeskButton>
               </form>
             </div>
-
           </div>
         </main>
       </AuthGuard>
@@ -158,6 +158,73 @@ export default function SettingsPage() {
   return (
     <AuthGuard>
       <main className="h-screen w-screen bg-slate-50 flex flex-col font-sans text-slate-900 overflow-hidden text-board-black">
+
+        {/* Lightbox */}
+        {lightboxUrl && (
+          <div
+            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={() => setLightboxUrl(null)}
+          >
+            <button
+              className="absolute top-4 right-4 w-10 h-10 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-all"
+              onClick={() => setLightboxUrl(null)}
+            >
+              <X className="w-5 h-5 text-white" />
+            </button>
+            <div className="relative w-full max-w-lg max-h-[90vh] aspect-square" onClick={e => e.stopPropagation()}>
+              <Image src={lightboxUrl} alt="" fill className="object-contain rounded-2xl" />
+            </div>
+          </div>
+        )}
+
+        {/* Regen dialog */}
+        {regenDialog && (
+          <div
+            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-6"
+            onClick={() => setRegenDialog(null)}
+          >
+            <div
+              className="bg-white rounded-[2rem] p-6 w-full max-w-sm flex flex-col gap-4 shadow-2xl"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="flex justify-between items-center">
+                <h3 className="text-xl font-black">Generovat obrázek</h3>
+                <button onClick={() => setRegenDialog(null)} className="p-2 text-slate-300 hover:text-slate-500 transition-colors">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <p className="text-slate-400 font-bold text-sm">
+                Slovíčko: <span className="text-board-black uppercase">{regenDialog.word}</span>
+              </p>
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-black uppercase tracking-widest text-slate-300">
+                  Doplňující instrukce <span className="font-normal normal-case">(volitelné)</span>
+                </label>
+                <textarea
+                  rows={3}
+                  placeholder="Např. nakresli červený míč v krabici, styl: pastelové barvy…"
+                  value={regenDialog.hint}
+                  onChange={e => setRegenDialog(d => d ? { ...d, hint: e.target.value } : d)}
+                  className="w-full text-sm font-medium py-3 px-4 rounded-2xl border-2 border-slate-200 focus:border-class-green outline-none bg-slate-50 resize-none"
+                  autoFocus
+                />
+              </div>
+              <div className="flex gap-3">
+                <DeskButton size="md" variant="outline" className="flex-1 border-slate-200" onClick={() => setRegenDialog(null)}>
+                  Zrušit
+                </DeskButton>
+                <DeskButton
+                  size="md"
+                  className="flex-1"
+                  onClick={() => handleRegenerateImage(regenDialog.id, regenDialog.hint || undefined)}
+                >
+                  <ImageIcon className="w-4 h-4 mr-2" /> Generovat
+                </DeskButton>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Header row */}
         <div className="flex items-center gap-2 pr-4 shrink-0">
           <AppHeader page="Slovníček (Admin)" onBack={() => router.push('/')} />
@@ -172,7 +239,7 @@ export default function SettingsPage() {
           </button>
         </div>
 
-        {/* Content — scrollable on mobile, two-col on desktop */}
+        {/* Content */}
         <div className="flex-1 flex flex-col lg:flex-row gap-4 p-4 overflow-y-auto min-h-0">
 
           {/* Add word panel */}
@@ -218,9 +285,13 @@ export default function SettingsPage() {
                   <div key={w.id} className="flex justify-between items-center bg-slate-50 p-3 rounded-2xl border-2 border-slate-100 hover:border-slate-200 transition-all">
                     <div className="flex items-center gap-3 min-w-0">
                       {w.image_url ? (
-                        <div className="relative w-10 h-10 rounded-xl overflow-hidden shrink-0 border border-slate-200">
+                        <button
+                          onClick={() => setLightboxUrl(w.image_url!)}
+                          className="relative w-10 h-10 rounded-xl overflow-hidden shrink-0 border border-slate-200 hover:border-class-green hover:scale-105 transition-all"
+                          title="Zobrazit obrázek"
+                        >
                           <Image src={w.image_url} alt={w.en} fill className="object-cover" />
-                        </div>
+                        </button>
                       ) : (
                         <div className="w-10 h-10 rounded-xl bg-slate-200 shrink-0 flex items-center justify-center">
                           <span className="text-slate-400 text-[9px] font-bold uppercase">–</span>
@@ -241,7 +312,7 @@ export default function SettingsPage() {
                         </button>
                       )}
                       <button
-                        onClick={() => handleRegenerateImage(w.id)}
+                        onClick={() => setRegenDialog({ id: w.id, word: w.en, hint: '' })}
                         disabled={regeneratingImageId === w.id}
                         title="Vygenerovat obrázek znovu"
                         className="text-slate-300 hover:text-class-green transition-colors p-2.5 rounded-xl disabled:opacity-50"
@@ -265,5 +336,3 @@ export default function SettingsPage() {
     </AuthGuard>
   );
 }
-
-import { ArrowRight as ArrowRightIcon } from 'lucide-react';

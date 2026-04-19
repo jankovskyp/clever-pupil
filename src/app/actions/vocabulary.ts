@@ -122,8 +122,12 @@ async function generateAndUploadAudio(en: string, supabase: SupabaseClient) {
 
 // ── Image generation via Gemini ──────────────────────────────────────────────
 
-async function generateAndUploadImage(en: string, supabase: SupabaseClient): Promise<string | null> {
+async function generateAndUploadImage(en: string, supabase: SupabaseClient, extraHint?: string): Promise<string | null> {
   if (!geminiApiKey) throw new Error('GEMINI_API_KEY není nastaven');
+
+  const prompt = extraHint
+    ? `${IMAGE_PROMPT(en)}\n\nExtra instructions for this specific word: ${extraHint}`
+    : IMAGE_PROMPT(en);
 
   const res = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${geminiApiKey}`,
@@ -131,7 +135,7 @@ async function generateAndUploadImage(en: string, supabase: SupabaseClient): Pro
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: IMAGE_PROMPT(en) }] }],
+        contents: [{ parts: [{ text: prompt }] }],
         generationConfig: { responseModalities: ['TEXT', 'IMAGE'] },
       }),
     }
@@ -218,7 +222,7 @@ export async function addVocabularyWord(en: string) {
   }
 }
 
-export async function regenerateWordImage(id: string) {
+export async function regenerateWordImage(id: string, extraHint?: string) {
   if (!supabaseServiceKey) return { error: 'Unauthorized' };
   const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
@@ -230,7 +234,7 @@ export async function regenerateWordImage(id: string) {
       .single();
     if (fetchError) throw fetchError;
 
-    const imageUrl = await generateAndUploadImage(word.en, supabase);
+    const imageUrl = await generateAndUploadImage(word.en, supabase, extraHint || undefined);
     if (!imageUrl) return { error: 'Generování obrázku selhalo' };
 
     const { error: updateError } = await supabase
