@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { usePlayer, AvatarType } from '@/context/PlayerContext';
 import { DeskButton } from '@/components/shared/DeskButton';
+import { AppHeader } from '@/components/shared/AppHeader';
 import { ChevronLeft, ArrowRight, UserPlus } from 'lucide-react';
 import Image from 'next/image';
 
@@ -99,28 +100,20 @@ export default function RegisterScreen() {
         <main className="h-screen w-screen bg-white flex flex-col font-sans text-board-black">
             <div className="w-full h-full flex flex-col overflow-hidden">
 
-                {/* Header */}
-                <div className="flex items-center gap-2 px-4 pt-4 pb-2 shrink-0">
-                    <button
-                        onClick={goBack}
-                        className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-board-black transition-colors"
-                        aria-label="Zpět"
-                    >
-                        <ChevronLeft className="w-5 h-5" />
-                    </button>
-                    <Image src="/icon.png" alt="Chytrý Školák" width={32} height={32} className="w-8 h-8 mix-blend-multiply" priority />
-                    <span className="text-lg font-black italic flex-1">Chytrý Školák</span>
-
-                    {/* Step indicator */}
-                    <div className="flex gap-1.5">
-                        {[1, 2, 3, 4].map((s) => (
-                            <div key={s} className={`h-2 w-8 rounded-full transition-colors ${step >= s ? 'bg-class-green' : 'bg-slate-200'}`} />
-                        ))}
-                    </div>
-                </div>
+                <AppHeader
+                    onBack={goBack}
+                    rightContent={
+                        <div className="flex gap-1.5 pr-1">
+                            {[1, 2, 3, 4].map((s) => (
+                                <div key={s} className={`h-2 w-8 rounded-full transition-colors ${step >= s ? 'bg-class-green' : 'bg-slate-200'}`} />
+                            ))}
+                        </div>
+                    }
+                />
 
                 {/* Content */}
                 <div className="flex-1 flex flex-col items-center justify-center p-6 overflow-y-auto">
+                  <div className="w-full max-w-sm flex flex-col items-center">
 
                     {error && <div className="p-4 bg-red-100 text-red-600 rounded-2xl w-full text-center mb-4 font-bold animate-in slide-in-from-top-2 duration-200">{error}</div>}
 
@@ -229,6 +222,7 @@ export default function RegisterScreen() {
                         </div>
                     )}
 
+                  </div>
                 </div>
             </div>
         </main>

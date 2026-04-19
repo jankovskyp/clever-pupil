@@ -13,9 +13,11 @@ interface AppHeaderProps {
   onBack?: () => void;
   /** Show the player avatar + logout button (home page only) */
   showLogout?: boolean;
+  /** Optional content placed on the right side (e.g. step indicator) */
+  rightContent?: React.ReactNode;
 }
 
-export function AppHeader({ subject, page, onBack, showLogout = false }: AppHeaderProps) {
+export function AppHeader({ subject, page, onBack, showLogout = false, rightContent }: AppHeaderProps) {
   const { player, setPlayer } = usePlayer();
   const router = useRouter();
 
@@ -58,6 +60,11 @@ export function AppHeader({ subject, page, onBack, showLogout = false }: AppHead
           </span>
         )}
       </div>
+
+      {/* Right: custom content (e.g. step indicator) */}
+      {rightContent && !showLogout && (
+        <div className="shrink-0">{rightContent}</div>
+      )}
 
       {/* Right: player avatar + logout (home only) */}
       {showLogout && player && (

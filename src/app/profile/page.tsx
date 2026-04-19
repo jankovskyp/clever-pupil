@@ -80,7 +80,8 @@ export default function ProfilePage() {
 
                     <AppHeader page="Můj profil" onBack={() => router.push('/')} />
 
-                    <div className="flex-1 flex flex-col items-center p-6 gap-5 overflow-y-auto">
+                    <div className="flex-1 flex flex-col items-center p-6 overflow-y-auto">
+                      <div className="w-full max-w-sm flex flex-col gap-5">
 
                         {/* Live avatar preview */}
                         <div className="w-24 h-24 relative drop-shadow-md">
@@ -154,6 +155,7 @@ export default function ProfilePage() {
                             }
                         </DeskButton>
 
+                      </div>
                     </div>
                 </div>
             </main>

@@ -1,9 +1,8 @@
 'use client';
 
-import Image from 'next/image';
 import { Heart, Mail, Sparkles } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { ChevronLeft } from 'lucide-react';
+import { AppHeader } from '@/components/shared/AppHeader';
 
 export default function AboutPage() {
   const router = useRouter();
@@ -12,22 +11,11 @@ export default function AboutPage() {
     <main className="h-screen w-screen bg-white flex flex-col font-sans text-board-black">
       <div className="w-full h-full flex flex-col overflow-hidden">
 
-        {/* Header */}
-        <div className="flex items-center gap-2 px-4 pt-4 pb-2 shrink-0">
-          <button
-            onClick={() => router.back()}
-            className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-board-black transition-colors"
-            aria-label="Zpět"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          <Image src="/icon.png" alt="Chytrý Školák" width={32} height={32} className="w-8 h-8 mix-blend-multiply" priority />
-          <span className="text-xs font-black uppercase tracking-widest text-slate-400 ml-1">O aplikaci</span>
-        </div>
+        <AppHeader page="O aplikaci" onBack={() => router.back()} />
 
         {/* Content */}
         <div className="flex-1 flex items-center justify-center p-6 overflow-y-auto">
-          <div className="w-full flex flex-col items-center gap-6 text-center animate-in zoom-in duration-500">
+          <div className="w-full max-w-sm flex flex-col items-center gap-6 text-center animate-in zoom-in duration-500">
 
             <div className="flex gap-3">
               <Heart className="w-12 h-12 text-error animate-pulse" fill="currentColor" />

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { DeskButton } from '@/components/shared/DeskButton';
 import { AppHeader } from '@/components/shared/AppHeader';
-import { Plus, Trash2, Loader2, Calendar, Volume2, RefreshCw, AlertCircle, Lock, ChevronLeft, ImageIcon, X } from 'lucide-react';
+import { Plus, Trash2, Loader2, Calendar, Volume2, RefreshCw, AlertCircle, Lock, ImageIcon, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { addVocabularyWord, adminRegenerateAll, regenerateWordImage } from '../actions/vocabulary';
@@ -114,19 +114,9 @@ export default function SettingsPage() {
       <AuthGuard>
         <main className="h-screen w-screen bg-white flex flex-col font-sans text-board-black">
           <div className="w-full h-full flex flex-col overflow-hidden">
-            <div className="flex items-center gap-2 px-4 pt-4 pb-2 shrink-0">
-              <button
-                onClick={() => router.push('/')}
-                className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-board-black transition-colors"
-                aria-label="Zpět"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <Image src="/icon.png" alt="Chytrý Školák" width={32} height={32} className="w-8 h-8 mix-blend-multiply" priority />
-              <span className="text-lg font-black italic">Chytrý Školák</span>
-            </div>
+            <AppHeader onBack={() => router.push('/')} />
             <div className="flex-1 flex flex-col items-center justify-center p-6 overflow-y-auto">
-              <form onSubmit={handleAuth} className="w-full flex flex-col items-center gap-5 animate-in fade-in zoom-in duration-300">
+              <form onSubmit={handleAuth} className="w-full max-w-sm flex flex-col items-center gap-5 animate-in fade-in zoom-in duration-300">
                 <div className="bg-slate-100 p-6 rounded-full">
                   <Lock className={`w-12 h-12 ${authError ? 'text-error animate-shake' : 'text-slate-400'}`} />
                 </div>

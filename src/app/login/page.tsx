@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { usePlayer, AvatarType } from '@/context/PlayerContext';
 import { DeskButton } from '@/components/shared/DeskButton';
+import { AppHeader } from '@/components/shared/AppHeader';
 import { ChevronLeft, UserPlus, Info, ArrowRight, LogIn } from 'lucide-react';
 import Image from 'next/image';
 
@@ -106,27 +107,14 @@ export default function LoginScreen() {
         <main className="h-screen w-screen bg-white flex flex-col font-sans text-board-black">
             <div className="w-full h-full flex flex-col overflow-hidden">
 
-                {/* Header */}
-                <div className="flex items-center gap-2 px-4 pt-4 pb-2 shrink-0">
-                    {selectedPlayer && (
-                        <button
-                            onClick={handleBackToSelection}
-                            className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-board-black transition-colors"
-                            aria-label="Jiný hráč"
-                        >
-                            <ChevronLeft className="w-5 h-5" />
-                        </button>
-                    )}
-                    <Image src="/icon.png" alt="Chytrý Školák" width={32} height={32} className="w-8 h-8 mix-blend-multiply" priority />
-                    <span className="text-lg font-black italic">Chytrý Školák</span>
-                </div>
+                <AppHeader onBack={selectedPlayer ? handleBackToSelection : undefined} />
 
                 {/* Content */}
                 <div className="flex-1 flex flex-col items-center justify-center p-6 overflow-y-auto">
 
                     {!selectedPlayer ? (
                         // --- USERNAME ENTRY ---
-                        <div className="w-full flex flex-col items-center gap-4 animate-in fade-in zoom-in duration-300">
+                        <div className="w-full max-w-sm flex flex-col items-center gap-4 animate-in fade-in zoom-in duration-300">
                             <h2 className="text-4xl font-black italic text-center">Kdo hraje?</h2>
                             {error && <div className="p-4 bg-red-100 text-red-600 rounded-2xl w-full text-center font-bold">{error}</div>}
                             <form onSubmit={handleUsernameSubmit} className="w-full flex flex-col gap-4">
@@ -153,7 +141,7 @@ export default function LoginScreen() {
                         </div>
                     ) : (
                         // --- PIN ENTRY & RECOVERY ---
-                        <div className="w-full flex flex-col items-center animate-in fade-in zoom-in duration-300">
+                        <div className="w-full max-w-sm flex flex-col items-center animate-in fade-in zoom-in duration-300">
                             <div className="w-20 h-20 mb-3 relative drop-shadow-sm">
                                 <Image src={`/avatars/${selectedPlayer.avatar}.png`} alt={selectedPlayer.username} fill className="object-contain mix-blend-multiply" />
                             </div>
