@@ -19,8 +19,10 @@ export function AppHeader({ subject, page, onBack, showLogout = false }: AppHead
   const { player, setPlayer } = usePlayer();
   const router = useRouter();
 
+  const isHome = showLogout;
+
   return (
-    <header className="flex items-center px-4 pt-4 pb-2 gap-2 shrink-0">
+    <header className={`flex items-center gap-3 shrink-0 ${isHome ? 'px-5 pt-5 pb-3' : 'px-4 pt-4 pb-2 gap-2'}`}>
       {/* Left: optional back arrow + owl icon */}
       <div className="flex items-center gap-1 shrink-0">
         {onBack && (
@@ -35,9 +37,9 @@ export function AppHeader({ subject, page, onBack, showLogout = false }: AppHead
         <Image
           src="/icon.png"
           alt="Chytrý Školák"
-          width={32}
-          height={32}
-          className="w-8 h-8 mix-blend-multiply"
+          width={isHome ? 52 : 32}
+          height={isHome ? 52 : 32}
+          className={`${isHome ? 'w-13 h-13' : 'w-8 h-8'} mix-blend-multiply`}
           priority
         />
       </div>
@@ -59,13 +61,13 @@ export function AppHeader({ subject, page, onBack, showLogout = false }: AppHead
 
       {/* Right: player avatar + logout (home only) */}
       {showLogout && player && (
-        <div className="flex items-center gap-1.5 bg-slate-50 border-2 border-slate-100 rounded-xl pl-1.5 pr-1 py-1 shrink-0">
+        <div className={`flex items-center shrink-0 bg-slate-50 border-2 border-slate-100 rounded-2xl ${isHome ? 'gap-2 pl-2 pr-1.5 py-1.5' : 'gap-1.5 pl-1.5 pr-1 py-1 rounded-xl'}`}>
           <button
             onClick={() => router.push('/profile')}
-            className="flex items-center gap-1.5 hover:opacity-75 transition-opacity"
+            className="flex items-center gap-2 hover:opacity-75 transition-opacity"
             title="Upravit profil"
           >
-            <div className="w-7 h-7 relative shrink-0">
+            <div className={`relative shrink-0 ${isHome ? 'w-10 h-10' : 'w-7 h-7'}`}>
               <Image
                 src={`/avatars/${player.avatar}.png`}
                 alt={player.username}
@@ -73,16 +75,16 @@ export function AppHeader({ subject, page, onBack, showLogout = false }: AppHead
                 className="object-contain mix-blend-multiply"
               />
             </div>
-            <span className="text-xs font-black leading-none max-w-[60px] truncate">
+            <span className={`font-black leading-none truncate ${isHome ? 'text-base max-w-[100px]' : 'text-xs max-w-[60px]'}`}>
               {player.username}
             </span>
           </button>
           <button
             onClick={() => { setPlayer(null); router.push('/login'); }}
-            className="p-1 text-slate-300 hover:text-error hover:bg-red-50 rounded-lg transition-colors"
+            className={`text-slate-300 hover:text-error hover:bg-red-50 rounded-lg transition-colors ${isHome ? 'p-1.5' : 'p-1'}`}
             title="Odhlásit se"
           >
-            <LogOut className="w-3.5 h-3.5" />
+            <LogOut className={isHome ? 'w-4 h-4' : 'w-3.5 h-3.5'} />
           </button>
         </div>
       )}
