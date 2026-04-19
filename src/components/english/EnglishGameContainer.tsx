@@ -349,16 +349,18 @@ export default function EnglishGameContainer() {
     return (
       <div className="flex flex-col h-full bg-desk-white font-sans text-board-black">
         <AppHeader subject="Angličtina" onBack={() => router.push('/')} />
-        <div className="flex-1 flex flex-col items-center justify-center gap-4 px-6 pb-6">
-          <DeskButton size="lg" onClick={() => { setGameMode('training'); setGameState('SETUP'); }} className="w-full py-7">
-            <Play className="mr-4 w-9 h-9" fill="currentColor" strokeWidth={2.5} /> Trénink
-          </DeskButton>
-          <DeskButton size="lg" variant="secondary" onClick={() => { setGameMode('competition'); setGameState('SETUP'); }} className="w-full py-7">
-            <Trophy className="mr-4 w-9 h-9" fill="currentColor" strokeWidth={2.5} /> Soutěž
-          </DeskButton>
-          <DeskButton size="lg" variant="outline" className="w-full border-slate-200 py-5" onClick={() => setGameState('LEADERBOARD')}>
-            <ListOrdered className="mr-4 w-7 h-7" /> Žebříček
-          </DeskButton>
+        <div className="flex-1 flex flex-col items-center justify-center px-6 pb-6">
+          <div className="w-full max-w-sm flex flex-col gap-4">
+            <DeskButton size="lg" onClick={() => { setGameMode('training'); setGameState('SETUP'); }} className="w-full py-7">
+              <Play className="mr-4 w-9 h-9" fill="currentColor" strokeWidth={2.5} /> Trénink
+            </DeskButton>
+            <DeskButton size="lg" variant="secondary" onClick={() => { setGameMode('competition'); setGameState('SETUP'); }} className="w-full py-7">
+              <Trophy className="mr-4 w-9 h-9" fill="currentColor" strokeWidth={2.5} /> Soutěž
+            </DeskButton>
+            <DeskButton size="lg" variant="outline" className="w-full border-slate-200 py-5" onClick={() => setGameState('LEADERBOARD')}>
+              <ListOrdered className="mr-4 w-7 h-7" /> Žebříček
+            </DeskButton>
+          </div>
         </div>
       </div>
     );

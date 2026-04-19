@@ -83,16 +83,6 @@ export default function ProfilePage() {
                     <div className="flex-1 flex flex-col items-center p-6 overflow-y-auto">
                       <div className="w-full max-w-sm flex flex-col gap-5">
 
-                        {/* Live avatar preview */}
-                        <div className="w-24 h-24 relative drop-shadow-md">
-                            <Image
-                                src={`/avatars/${avatar}.png`}
-                                alt={username}
-                                fill
-                                className="object-contain mix-blend-multiply"
-                            />
-                        </div>
-
                         {/* Username */}
                         <div className="w-full flex flex-col gap-1.5">
                             <label className="text-xs font-black uppercase tracking-widest text-slate-400 ml-1">Přezdívka</label>

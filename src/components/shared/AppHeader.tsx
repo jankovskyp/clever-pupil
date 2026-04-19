@@ -49,13 +49,13 @@ export function AppHeader({ subject, page, onBack, showLogout = false, rightCont
       {/* Centre: breadcrumb */}
       <div className="flex-1 flex items-center gap-1 min-w-0 px-1">
         {subject && (
-          <span className="text-xs font-black uppercase tracking-widest text-class-green truncate">
+          <span className="text-sm font-black uppercase tracking-widest text-class-green truncate">
             {subject}
           </span>
         )}
         {subject && page && <ChevronRight className="w-3 h-3 text-slate-300 shrink-0" />}
         {page && (
-          <span className="text-xs font-black uppercase tracking-widest text-slate-400 truncate">
+          <span className="text-sm font-black uppercase tracking-widest text-slate-400 truncate">
             {page}
           </span>
         )}
