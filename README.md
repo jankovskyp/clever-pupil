@@ -53,7 +53,7 @@ An educational web app for kids to practice **math** and **English vocabulary** 
 ### 1. Clone and install
 
 ```bash
-git clone https://github.com/jankovskyp/math-first-grade.git
+git clone https://github.com/jankovskyp/clever-pupil.git
 cd math-game
 npm install
 ```
